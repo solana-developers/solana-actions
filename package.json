@@ -1,0 +1,33 @@
+{
+    "name": "@solana/actions",
+    "version": "0.0.1",
+    "author": "Solana Maintainers <maintainers@solana.foundation>",
+    "repository": "https://github.com/solana-developers/solana-actions",
+    "license": "Apache-2.0",
+    "type": "module",
+    "sideEffects": false,
+    "engines": {
+        "node": ">=16"
+    },
+    "description": "",
+    "main": "./src/index.ts",
+    "keywords": [],
+    "homepage": "https://github.com/solana-developers/solana-actions#readme",
+    "bugs": {
+        "url": "https://github.com/solana-developers/solana-actions/issues"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {},
+    "contributors": [
+        {
+            "name": "Jordan",
+            "url": "https://github.com/jordaaash"
+        },
+        {
+            "name": "Nick Frostbutter",
+            "url": "https://github.com/nickfrosty"
+        }
+    ]
+}
