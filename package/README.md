@@ -2,6 +2,16 @@
 
 [Read the docs to get started](https://solana.com/docs/advanced/actions)
 
+Install the `@solana/actions` SDK into your application:
+
+```shell
+npm add @solana/actions
+```
+
+[`@solana/actions` SDK on NPM](https://www.npmjs.com/package/@solana/actions)
+
+## Developer resources
+
 Watch this video tutorial on
 [How to Build Solana Actions](https://youtu.be/kCht01Ycif0)
 
@@ -12,14 +22,6 @@ Find example code snippets on how to build several different Solana Actions:
 
 - [Deployed sample code snippets](https://solana-actions.vercel.app/)
 - [Source code for code snippets](https://github.com/solana-developers/solana-actions/tree/main/examples/next-js)
-
-Install the `@solana/actions` SDK into your application:
-
-```shell
-npm add @solana/actions
-```
-
-[`@solana/actions` SDK on NPM](https://www.npmjs.com/package/@solana/actions)
 
 ## What are Solana Actions?
 
