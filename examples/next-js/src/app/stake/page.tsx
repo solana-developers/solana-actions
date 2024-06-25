@@ -58,7 +58,7 @@ export default function Pages() {
           View the{" "}
           <Button variant={"link"} asChild>
             <Link
-              href={`${siteConfig.links.github}/app${apiPath}/route.ts`}
+              href={`${siteConfig.links.github}/src/app${apiPath}/route.ts`}
               target="_blank"
             >
               source code for this sample Action
