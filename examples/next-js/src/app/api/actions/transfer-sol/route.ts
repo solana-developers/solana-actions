@@ -25,7 +25,7 @@ import { DEFAULT_SOL_ADDRESS, DEFAULT_SOL_AMOUNT } from "./const";
 export const GET = async (req: Request) => {
   try {
     const requestUrl = new URL(req.url);
-    const { toPubkey } = validatedQueryParams(requestUrl);
+    const { toPubkey, amount } = validatedQueryParams(requestUrl);
 
     const baseHref = new URL(
       `/api/actions/transfer-sol?to=${toPubkey.toBase58()}`,
@@ -53,7 +53,7 @@ export const GET = async (req: Request) => {
           },
           {
             label: "Send SOL", // button text
-            href: `${baseHref}&amount={amount}`, // this href will have a text input
+            href: `${baseHref}&amount=${amount}`, // this href will have a text input
             parameters: [
               {
                 name: "amount", // parameter name in the `href` above
