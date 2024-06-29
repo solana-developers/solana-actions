@@ -14,8 +14,7 @@ import { findReference } from "./findReference";
 
 const ACTIONS_IDENTITY_SCHEMA = {
   separator: ":",
-  protocol: "nick",
-  // protocol: SOLANA_ACTIONS_PROTOCOL.replace(':', ''),
+  protocol: SOLANA_ACTIONS_PROTOCOL.replace(":", ""),
   /** avoids magic numbers */
   scheme: {
     protocol: 0, // should always be zero
