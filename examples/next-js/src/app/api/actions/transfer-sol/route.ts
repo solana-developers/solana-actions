@@ -115,7 +115,6 @@ export const POST = async (req: Request) => {
     }
 
     const transaction = new Transaction();
-    transaction.feePayer = account;
 
     transaction.add(
       SystemProgram.transfer({
