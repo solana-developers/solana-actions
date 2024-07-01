@@ -8,7 +8,10 @@ Install the `@solana/actions` SDK into your application:
 npm add @solana/actions
 ```
 
-[`@solana/actions` SDK on NPM](https://www.npmjs.com/package/@solana/actions)
+- `@solana/actions` SDK on NPM:
+  - https://www.npmjs.com/package/@solana/actions
+- Typedocs for the `@solana/actions` SDK:
+  - https://solana-developers.github.io/solana-actions/
 
 ## Developer resources
 
