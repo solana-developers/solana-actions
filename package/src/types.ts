@@ -97,7 +97,7 @@ export interface LinkedAction {
   /** button text rendered to the user */
   label: string;
   /** parameters used to accept user input within an action */
-  parameters?: [ActionParameter];
+  parameters?: ActionParameter[];
 }
 
 /**
