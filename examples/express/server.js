@@ -9,13 +9,17 @@ import {
   clusterApiUrl, 
   LAMPORTS_PER_SOL 
 } from "@solana/web3.js";
+import {
+  createPostResponse,
+} from "@solana/actions";
+
 
 const DEFAULT_SOL_ADDRESS = Keypair.generate().publicKey;
 const DEFAULT_SOL_AMOUNT = 1;
 const connection = new Connection(clusterApiUrl("devnet"));
 
 const PORT = 8080;
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = `http://localhost:${PORT}`;
 
 // Express app setup
 const app = express();
@@ -89,25 +93,30 @@ async function postTransferSol(req, res) {
       throw new Error(`Account may not be rent exempt: ${toPubkey.toBase58()}`);
     }
 
-    const transaction = new Transaction().add(
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+
+    const transaction = new Transaction({
+      feePayer: fromPubkey,
+      blockhash,
+      lastValidBlockHeight
+    }).add(
       SystemProgram.transfer({
         fromPubkey,
         toPubkey,
         lamports: amount * LAMPORTS_PER_SOL,
       })
     );
-    transaction.feePayer = fromPubkey;
 
-    const { blockhash } = await connection.getLatestBlockhash();
-    transaction.recentBlockhash = blockhash;
-
-    const serializedTransaction = transaction.serialize({ requireAllSignatures: false });
-    const base64Transaction = serializedTransaction.toString('base64');
-
-    res.json({
-      transaction: base64Transaction,
-      message: `Send ${amount} SOL to ${toPubkey.toBase58()}`,
+    const payload = await createPostResponse({
+      fields: {
+        transaction,
+        message: `Send ${amount} SOL to ${toPubkey.toBase58()}`,
+      },
+      // note: no additional signers are needed
+      // signers: [],
     });
+
+    res.json(payload);
   } catch (err) {
     res.status(400).json({ error: err.message || "An unknown error occurred" });
   }
