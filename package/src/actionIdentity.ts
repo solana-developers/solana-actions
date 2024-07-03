@@ -6,11 +6,11 @@ import {
   Signer,
   TransactionInstruction,
 } from "@solana/web3.js";
-import nacl from "tweetnacl";
-import type { Reference } from "./types";
-import { MEMO_PROGRAM_ID, SOLANA_ACTIONS_PROTOCOL } from "./constants";
 import bs58 from "bs58";
-import { findReference } from "./findReference";
+import nacl from "tweetnacl";
+import type { Reference } from "./types.js";
+import { MEMO_PROGRAM_ID, SOLANA_ACTIONS_PROTOCOL } from "./constants.js";
+import { findReference } from "./findReference.js";
 
 const ACTIONS_IDENTITY_SCHEMA = {
   separator: ":",
@@ -23,13 +23,6 @@ const ACTIONS_IDENTITY_SCHEMA = {
     signature: 3,
   },
 };
-
-// enum IdentifierFields {
-//     Protocol = 0,
-//     Identity = 1,
-//     Data = 2, // i.e `reference` key
-//     Signature = 3,
-// }
 
 export function createActionIdentifierMemo(
   identity: Signer,

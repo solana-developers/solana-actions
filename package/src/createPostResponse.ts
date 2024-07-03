@@ -1,20 +1,11 @@
-import {
-  Commitment,
-  ComputeBudgetInstruction,
-  ComputeBudgetProgram,
-  Connection,
-  PublicKey,
-  Signer,
-  TransactionInstruction,
-} from "@solana/web3.js";
+import { Commitment, PublicKey, Signer } from "@solana/web3.js";
 import { Transaction } from "@solana/web3.js";
-import { toUint8Array } from "js-base64";
-import { ActionPostResponse, Reference } from "./types";
-import { MEMO_PROGRAM_ID } from "./constants";
+import { ActionPostResponse, Reference } from "./types.js";
+import { MEMO_PROGRAM_ID } from "./constants.js";
 import {
   createActionIdentifierInstruction,
   getActionIdentityFromEnv,
-} from "./actionIdentity";
+} from "./actionIdentity.js";
 
 /**
  * Thrown when the Action POST response cannot be created.

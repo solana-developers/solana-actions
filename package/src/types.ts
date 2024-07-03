@@ -3,7 +3,7 @@ import {
   SOLANA_ACTIONS_PROTOCOL,
   SOLANA_ACTIONS_PROTOCOL_PLURAL,
   SOLANA_PAY_PROTOCOL,
-} from "./constants";
+} from "./constants.js";
 
 /** `reference` in the [Solana Actions spec](https://github.com/solana-labs/solana-pay/blob/master/SPEC.md#reference). */
 export type Reference = PublicKey;
