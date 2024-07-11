@@ -37,14 +37,16 @@
     "build": "tsc --build --verbose tsconfig.all.json",
     "postbuild": "shx echo '{ \"type\": \"commonjs\" }' > lib/cjs/package.json",
     "watch": "tsc --build --verbose --watch tsconfig.all.json",
-    "release": "npm run clean && npm run build",
     "prettier": "prettier --write '{*,**/*}.{ts,tsx,js,jsx,css,json}'",
     "lint": "prettier --check '{*,**/*}.{ts,tsx,js,jsx,css,json}' && eslint --max-warnings 0 .",
     "lint:fix": "npm run prettier && eslint --fix .",
     "test": "jest",
     "deploy": "npm run deploy:docs",
     "docs": "shx rm -rf docs && npx typedoc && shx cp .nojekyll docs/",
-    "deploy:docs": "npm run docs && npx gh-pages --dist docs/ --dotfiles"
+    "deploy:docs": "npm run docs && npx gh-pages --dist docs/ --dotfiles",
+    "version": "changeset version && git add -A && git commit -m \"chore: version\"",
+    "release": "npm run clean && npm run build",
+    "publish": "npm run release && changeset publish && git add -A && git push --follow-tags && deploy:docs"
   },
   "dependencies": {
     "@solana/qr-code-styling": "^1.6.0",
