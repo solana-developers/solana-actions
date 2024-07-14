@@ -23,7 +23,13 @@ const connection = new Connection("https://api.mainnet-beta.solana.com");
 
 const app = new Hono();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    allowHeaders: ["Content-Type", "Authorization", "Accept-Encoding"],
+    allowMethods: ["GET", "POST", "PUT", "OPTIONS"],
+  })
+);
 
 app.get("/", (c) => {
   const response: ActionGetResponse = {
