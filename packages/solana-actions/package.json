@@ -46,7 +46,7 @@
     "deploy:docs": "npm run docs && npx gh-pages --dist docs/ --dotfiles",
     "version": "changeset version && git add -A && git commit -m \"chore: version\"",
     "release": "npm run clean && npm run build",
-    "publish": "npm run release && changeset publish && git add -A && git push --follow-tags && deploy:docs"
+    "publish": "npm run release && changeset publish && git add -A && git push --follow-tags && npm run deploy:docs"
   },
   "dependencies": {
     "@solana/qr-code-styling": "^1.6.0",
