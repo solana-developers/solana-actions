@@ -1,9 +1,6 @@
-import { BLINKS_QUERY_PARAM, SOLANA_ACTIONS_PROTOCOL } from "./constants.js";
-import type {
-  ActionRequestURLFields,
-  BlinkURLFields,
-  SupportedProtocols,
-} from "./types.js";
+import { SupportedProtocols } from "@solana/actions-spec";
+import { BLINKS_QUERY_PARAM } from "./constants.js";
+import type { ActionRequestURLFields, BlinkURLFields } from "./types.js";
 
 /**
  * Thrown when fields cannot be encoded as a blink or Solana Action URL.
@@ -21,7 +18,7 @@ export class EncodeURLError extends Error {
  */
 export function encodeURL(
   fields: ActionRequestURLFields | BlinkURLFields,
-  protocol: SupportedProtocols = SOLANA_ACTIONS_PROTOCOL,
+  protocol: SupportedProtocols = "solana-action:",
 ): URL {
   if ("blink" in fields) return encodeBlinkURL(fields, protocol);
   return encodeActionRequestURL(fields, protocol);
@@ -29,7 +26,7 @@ export function encodeURL(
 
 function encodeActionRequestURL(
   { link, label, message }: ActionRequestURLFields,
-  protocol: SupportedProtocols = SOLANA_ACTIONS_PROTOCOL,
+  protocol: SupportedProtocols = "solana-action:",
 ): URL {
   // Remove trailing slashes
   const pathname = link.search

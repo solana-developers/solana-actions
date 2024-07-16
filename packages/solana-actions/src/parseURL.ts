@@ -1,10 +1,5 @@
-import {
-  BLINKS_QUERY_PARAM,
-  HTTPS_PROTOCOL,
-  SOLANA_ACTIONS_PROTOCOL,
-  SOLANA_ACTIONS_PROTOCOL_PLURAL,
-  SOLANA_PAY_PROTOCOL,
-} from "./constants.js";
+import type { SupportedProtocols } from "@solana/actions-spec";
+import { BLINKS_QUERY_PARAM, HTTPS_PROTOCOL } from "./constants.js";
 import type { ActionRequestURLFields, BlinkURLFields } from "./types.js";
 
 /**
@@ -33,11 +28,9 @@ export function parseURL(
     return parseBlinkURL(url);
   }
 
-  if (
-    url.protocol !== SOLANA_PAY_PROTOCOL &&
-    url.protocol !== SOLANA_ACTIONS_PROTOCOL &&
-    url.protocol !== SOLANA_ACTIONS_PROTOCOL_PLURAL
-  ) {
+  const protocol = url.protocol as SupportedProtocols;
+
+  if (protocol !== "solana:" && protocol !== "solana-action:") {
     throw new ParseURLError("protocol invalid");
   }
   if (!url.pathname) throw new ParseURLError("pathname missing");

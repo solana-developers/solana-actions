@@ -1,11 +1,12 @@
 import { Commitment, PublicKey, Signer } from "@solana/web3.js";
 import { Transaction } from "@solana/web3.js";
-import { ActionPostResponse, Reference } from "./types.js";
+import type { Reference } from "./types.js";
 import { MEMO_PROGRAM_ID } from "./constants.js";
 import {
   createActionIdentifierInstruction,
   getActionIdentityFromEnv,
 } from "./actionIdentity.js";
+import { ActionPostResponse } from "@solana/actions-spec";
 
 /**
  * Thrown when the Action POST response cannot be created.
