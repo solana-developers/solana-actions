@@ -1,0 +1,51 @@
+{
+  "private": false,
+  "name": "@solana/actions-spec",
+  "version": "1.1.2",
+  "author": "Solana Maintainers <maintainers@solana.foundation>",
+  "repository": "https://github.com/solana-developers/solana-actions",
+  "homepage": "https://github.com/solana-developers/solana-actions#readme",
+  "bugs": {
+    "url": "https://github.com/solana-developers/solana-actions/issues"
+  },
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    "types": "./index.d.ts"
+  },
+  "scripts": {
+    "version": "changeset version && git add -A && git commit -m \"chore: version\"",
+    "publish": "changeset publish && git add -A && git push --follow-tags"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.7"
+  },
+  "contributors": [
+    {
+      "name": "Jordan",
+      "url": "https://github.com/jordaaash"
+    },
+    {
+      "name": "Nick Frostbutter",
+      "url": "https://github.com/nickfrosty"
+    },
+    {
+      "name": "Jon Wong",
+      "url": "https://github.com/jnwng"
+    },
+    {
+      "name": "Nick Zhelezkov",
+      "url": "https://github.com/zhelezkov"
+    },
+    {
+      "name": "Alexey Tsymbal",
+      "url": "https://github.com/Baulore"
+    },
+    {
+      "name": "Filipp Sher",
+      "url": "https://github.com/fsher"
+    }
+  ]
+}
