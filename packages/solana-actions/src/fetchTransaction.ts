@@ -1,9 +1,9 @@
+import { ActionPostRequest, ActionPostResponse } from "@solana/actions-spec";
 import { Commitment, Connection, PublicKey } from "@solana/web3.js";
 import { Transaction } from "@solana/web3.js";
 import fetch from "cross-fetch";
 import { toUint8Array } from "js-base64";
 import nacl from "tweetnacl";
-import { ActionPostRequest, ActionPostResponse } from "./types.js";
 
 /**
  * Thrown when a transaction response can't be fetched.

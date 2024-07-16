@@ -49,6 +49,7 @@
     "publish": "npm run release && changeset publish && git add -A && git push --follow-tags && npm run deploy:docs"
   },
   "dependencies": {
+    "@solana/actions-spec": "^2.0.0",
     "@solana/qr-code-styling": "^1.6.0",
     "@solana/web3.js": "^1.61.0",
     "bs58": "^5.0.0",

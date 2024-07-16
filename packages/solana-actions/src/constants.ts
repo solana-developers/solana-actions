@@ -1,13 +1,4 @@
 /** @internal */
-export const SOLANA_PAY_PROTOCOL = "solana:";
-
-/** @internal */
-export const SOLANA_ACTIONS_PROTOCOL = "solana-action:";
-
-/** @internal */
-export const SOLANA_ACTIONS_PROTOCOL_PLURAL = "solana-actions:";
-
-/** @internal */
 export const HTTPS_PROTOCOL = "https:";
 
 /** Program Id for the SPL Memo program */

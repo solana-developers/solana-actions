@@ -9,12 +9,13 @@ import {
 import bs58 from "bs58";
 import nacl from "tweetnacl";
 import type { Reference } from "./types.js";
-import { MEMO_PROGRAM_ID, SOLANA_ACTIONS_PROTOCOL } from "./constants.js";
+import { MEMO_PROGRAM_ID } from "./constants.js";
 import { findReference } from "./findReference.js";
+import { SOLANA_ACTIONS_PROTOCOL } from "@solana/actions-spec";
 
 const ACTIONS_IDENTITY_SCHEMA = {
   separator: ":",
-  protocol: SOLANA_ACTIONS_PROTOCOL.replace(":", ""),
+  protocol: ("solana-action:" as SOLANA_ACTIONS_PROTOCOL).replace(":", ""),
   /** avoids magic numbers */
   scheme: {
     protocol: 0, // should always be zero
