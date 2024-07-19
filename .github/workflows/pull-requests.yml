@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./package
+        working-directory: ./packages/solana-actions
 
     strategy:
       matrix:
