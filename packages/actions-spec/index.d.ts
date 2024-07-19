@@ -73,19 +73,54 @@ export interface LinkedAction {
   /** button text rendered to the user */
   label: string;
   /** parameters used to accept user input within an action */
-  parameters?: ActionParameter[];
+  parameters?: Array<ActionParameter | ActionParameterSelectable>;
 }
 
 /**
  * Parameter to accept user input within an action
  */
 export interface ActionParameter {
+  /** input field type */
+  type?: ActionParameterType;
+  /** regular expression pattern to validate user input client side */
+  pattern?: string;
+  /** human readable description of the `pattern` */
+  patternDescription?: string;
   /** parameter name in url */
   name: string;
   /** placeholder text for the user input field */
   label?: string;
   /** declare if this field is required (defaults to `false`) */
   required?: boolean;
+}
+
+/**
+ * Input field type to present to the user. Normally resembling the respective
+ * [HTML `input` types](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input)
+ * or standard HTML element (e.g. `select`) for the platform being used (web, mobile, etc).
+ * @default `text`
+ */
+export type ActionParameterType =
+  | "text"
+  | "email"
+  | "url"
+  | "number"
+  | "date"
+  | "datetime-local"
+  | "checkbox"
+  | "radio"
+  | "textarea"
+  | "select";
+
+export interface ActionParameterSelectable extends ActionParameter {
+  options: Array<{
+    /** displayed UI label of this selectable option */
+    label: string;
+    /** value of this selectable option */
+    value: string;
+    /** whether or not this option should be selected by default */
+    selected?: boolean;
+  }>;
 }
 
 /**
