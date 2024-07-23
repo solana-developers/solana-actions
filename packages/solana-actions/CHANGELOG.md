@@ -1,5 +1,12 @@
 # @solana/actions
 
+## 1.3.0
+
+### Minor Changes
+
+- added support for the web3js `VersionedTransaction` inside of
+  `createPostResponse`
+
 ## 1.2.0
 
 ### Minor Changes
