@@ -1,18 +1,18 @@
-import express from 'express';
-import cors from 'cors';
-import { 
-  Connection, 
-  Keypair, 
-  PublicKey, 
-  SystemProgram, 
-  Transaction, 
-  clusterApiUrl, 
-  LAMPORTS_PER_SOL 
+import express from "express";
+import cors from "cors";
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+  clusterApiUrl,
+  LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
 import {
+  ACTIONS_CORS_HEADERS_MIDDLEWARE,
   createPostResponse,
 } from "@solana/actions";
-
 
 const DEFAULT_SOL_ADDRESS = Keypair.generate().publicKey;
 const DEFAULT_SOL_AMOUNT = 1;
@@ -24,16 +24,12 @@ const BASE_URL = `http://localhost:${PORT}`;
 // Express app setup
 const app = express();
 app.use(express.json());
-app.use(cors({
-  origin: '*', 
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Content-Encoding', 'Accept-Encoding'],
-}));
+app.use(cors(ACTIONS_CORS_HEADERS_MIDDLEWARE));
 
 // Routes
-app.get('/actions.json', getActionsJson);
-app.get('/api/actions/transfer-sol', getTransferSol);
-app.post('/api/actions/transfer-sol', postTransferSol);
+app.get("/actions.json", getActionsJson);
+app.get("/api/actions/transfer-sol", getTransferSol);
+app.post("/api/actions/transfer-sol", postTransferSol);
 
 // Route handlers
 function getActionsJson(req, res) {
@@ -64,7 +60,11 @@ async function getTransferSol(req, res) {
             label: "Send SOL",
             href: `${baseHref}&amount={amount}`,
             parameters: [
-              { name: "amount", label: "Enter the amount of SOL to send", required: true },
+              {
+                name: "amount",
+                label: "Enter the amount of SOL to send",
+                required: true,
+              },
             ],
           },
         ],
@@ -73,7 +73,9 @@ async function getTransferSol(req, res) {
 
     res.json(payload);
   } catch (err) {
-    handleError(res, err);
+    console.error(err);
+    // handleError(res, err);
+    res.status(500).json({ message: err?.message || err });
   }
 }
 
@@ -87,25 +89,40 @@ async function postTransferSol(req, res) {
     }
 
     const fromPubkey = new PublicKey(account);
-    const minimumBalance = await connection.getMinimumBalanceForRentExemption(0);
-    
+    const minimumBalance = await connection.getMinimumBalanceForRentExemption(
+      0,
+    );
+
     if (amount * LAMPORTS_PER_SOL < minimumBalance) {
       throw new Error(`Account may not be rent exempt: ${toPubkey.toBase58()}`);
     }
 
-    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+    // create an instruction to transfer native SOL from one wallet to another
+    const transferSolInstruction = SystemProgram.transfer({
+      fromPubkey: fromPubkey,
+      toPubkey: toPubkey,
+      lamports: amount * LAMPORTS_PER_SOL,
+    });
 
+    const { blockhash, lastValidBlockHeight } =
+      await connection.getLatestBlockhash();
+
+    // create a legacy transaction
     const transaction = new Transaction({
       feePayer: fromPubkey,
       blockhash,
-      lastValidBlockHeight
-    }).add(
-      SystemProgram.transfer({
-        fromPubkey,
-        toPubkey,
-        lamports: amount * LAMPORTS_PER_SOL,
-      })
-    );
+      lastValidBlockHeight,
+    }).add(transferSolInstruction);
+
+    // versioned transactions are also supported
+    // const transaction = new VersionedTransaction(
+    //   new TransactionMessage({
+    //     payerKey: fromPubkey,
+    //     recentBlockhash: blockhash,
+    //     instructions: [transferSolInstruction],
+    //   }).compileToV0Message(),
+    //   // note: you can also use `compileToLegacyMessage`
+    // );
 
     const payload = await createPostResponse({
       fields: {
