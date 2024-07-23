@@ -10,13 +10,10 @@ import {
   ActionPostRequest,
 } from "@solana/actions";
 import {
-  Authorized,
   clusterApiUrl,
   Connection,
-  Keypair,
   LAMPORTS_PER_SOL,
   PublicKey,
-  StakeProgram,
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
@@ -114,22 +111,33 @@ export const POST = async (req: Request) => {
       throw `account may not be rent exempt: ${toPubkey.toBase58()}`;
     }
 
-    const transaction = new Transaction();
+    // create an instruction to transfer native SOL from one wallet to another
+    const transferSolInstruction = SystemProgram.transfer({
+      fromPubkey: account,
+      toPubkey: toPubkey,
+      lamports: amount * LAMPORTS_PER_SOL,
+    });
 
-    transaction.add(
-      SystemProgram.transfer({
-        fromPubkey: account,
-        toPubkey: toPubkey,
-        lamports: amount * LAMPORTS_PER_SOL,
-      }),
-    );
+    // get the latest blockhash amd block height
+    const { blockhash, lastValidBlockHeight } =
+      await connection.getLatestBlockhash();
 
-    // set the end user as the fee payer
-    transaction.feePayer = account;
+    // create a legacy transaction
+    const transaction = new Transaction({
+      feePayer: account,
+      blockhash,
+      lastValidBlockHeight,
+    }).add(transferSolInstruction);
 
-    transaction.recentBlockhash = (
-      await connection.getLatestBlockhash()
-    ).blockhash;
+    // versioned transactions are also supported
+    // const transaction = new VersionedTransaction(
+    //   new TransactionMessage({
+    //     payerKey: account,
+    //     recentBlockhash: blockhash,
+    //     instructions: [transferSolInstruction],
+    //   }).compileToV0Message(),
+    //   // note: you can also use `compileToLegacyMessage`
+    // );
 
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
