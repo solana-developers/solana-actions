@@ -18,6 +18,16 @@ to a decentralized app; in Discord, a bot might expand the blink into an
 interactive set of buttons. This pushes the ability to interact on-chain to any
 web surface capable of displaying a URL.
 
+## Simplified Type Definitions
+
+The types and interfaces declared within this readme files are often the
+simplified version of the types to aid in readability.
+
+For better type safety and improved developer experience, the
+`@solana/actions-spec` package contains more complex type definitions. You can
+find the
+[source code for them here](https://github.com/solana-developers/solana-actions/blob/main/packages/actions-spec/index.d.ts).
+
 ## Contributing
 
 If you would like to propose an update the Solana Actions specification, please
@@ -270,6 +280,8 @@ fields, providing better client side validation and improving the user
 experience. In many cases, this type will resemble the standard
 [HTML input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
 
+The `ActionParameterType` can be simplified to the following type:
+
 ```ts filename="ActionParameterType"
 /**
  * Input field type to present to the user
@@ -338,6 +350,9 @@ should include an array of `options` that each provide a `label` and `value` at
 a minimum. Each option may also have a `selected` value to inform the
 blink-client which of the options should be selected by default for the user
 (see `checkbox` and `radio` for differences).
+
+This `ActionParameterSelectable` can be simplified to the following type
+definition:
 
 ```ts filename="ActionParameterSelectable"
 interface ActionParameterSelectable extends ActionParameter {

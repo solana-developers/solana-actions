@@ -73,15 +73,21 @@ export interface LinkedAction {
   /** button text rendered to the user */
   label: string;
   /** parameters used to accept user input within an action */
-  parameters?: Array<ActionParameter | ActionParameterSelectable>;
+  parameters?: TypedParameter[];
 }
+
+export type TypedParameter<
+  T extends ActionParameterType = ActionParameterType,
+> = T extends SelectableParameterType
+  ? ActionParameterSelectable<T>
+  : ActionParameter<T>;
 
 /**
  * Parameter to accept user input within an action
  */
-export interface ActionParameter {
+export interface ActionParameter<T extends ActionParameterType> {
   /** input field type */
-  type?: ActionParameterType;
+  type?: T;
   /** regular expression pattern to validate user input client side */
   pattern?: string;
   /** human readable description of the `pattern` */
@@ -94,6 +100,17 @@ export interface ActionParameter {
   required?: boolean;
 }
 
+export type GeneralParameterType =
+  | "text"
+  | "email"
+  | "url"
+  | "number"
+  | "date"
+  | "datetime-local"
+  | "textarea";
+
+export type SelectableParameterType = "select" | "radio" | "checkbox";
+
 /**
  * Input field type to present to the user. Normally resembling the respective
  * [HTML `input` types](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input)
@@ -101,24 +118,20 @@ export interface ActionParameter {
  * @default `text`
  */
 export type ActionParameterType =
-  | "text"
-  | "email"
-  | "url"
-  | "number"
-  | "date"
-  | "datetime-local"
-  | "checkbox"
-  | "radio"
-  | "textarea"
-  | "select";
+  | GeneralParameterType
+  | SelectableParameterType;
 
-export interface ActionParameterSelectable extends ActionParameter {
+export interface ActionParameterSelectable<T extends ActionParameterType>
+  extends Omit<ActionParameter<T>, "pattern" | "patternDescription"> {
+  /**
+   * Listing of the options the user should be able to select from
+   */
   options: Array<{
     /** displayed UI label of this selectable option */
     label: string;
     /** value of this selectable option */
     value: string;
-    /** whether or not this option should be selected by default */
+    /** whether this option should be selected by default */
     selected?: boolean;
   }>;
 }
