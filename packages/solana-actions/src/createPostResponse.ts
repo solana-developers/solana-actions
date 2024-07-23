@@ -1,5 +1,12 @@
-import { Commitment, PublicKey, Signer } from "@solana/web3.js";
-import { Transaction } from "@solana/web3.js";
+import {
+  Commitment,
+  PublicKey,
+  Signer,
+  TransactionInstruction,
+  TransactionMessage,
+  VersionedTransaction,
+  Transaction,
+} from "@solana/web3.js";
 import type { Reference } from "./types.js";
 import { MEMO_PROGRAM_ID } from "./constants.js";
 import {
@@ -18,11 +25,13 @@ export class CreatePostResponseError extends Error {
 /**
  * Arguments to create a POST response payload
  */
-export interface CreateActionPostResponseArgs {
+export interface CreateActionPostResponseArgs<
+  TransactionType = Transaction | VersionedTransaction,
+> {
   /** POST response fields per the Solana Actions spec. */
   fields: Omit<ActionPostResponse, "transaction"> & {
     /** Solana transaction to be base64 encoded. */
-    transaction: Transaction;
+    transaction: TransactionType;
   };
   /** Optional signers that will sign the transaction. */
   signers?: Signer[];
@@ -40,62 +49,132 @@ export interface CreateActionPostResponseArgs {
  *
  * @throws {CreatePostResponseError}
  */
-export async function createPostResponse({
-  fields,
-  signers,
-  reference,
-  actionIdentity,
-}: CreateActionPostResponseArgs): Promise<ActionPostResponse> {
-  const { transaction } = fields;
-
-  if (!transaction.recentBlockhash)
-    transaction.recentBlockhash = "11111111111111111111111111111111";
-
-  // Auto-magically detect the identity keypair
-  if (!actionIdentity) {
+export async function createPostResponse(
+  args: CreateActionPostResponseArgs,
+): Promise<ActionPostResponse> {
+  // Auto-magically detect the identity keypair from the env
+  if (!args.actionIdentity) {
     try {
-      actionIdentity = getActionIdentityFromEnv();
+      args.actionIdentity = getActionIdentityFromEnv();
     } catch (err) {
       // do nothing
     }
   }
 
-  if (transaction.instructions.length <= 0) {
+  if (args.fields.transaction instanceof Transaction) {
+    return prepareLegacyTransaction(
+      args as CreateActionPostResponseArgs<Transaction>,
+    );
+  } else {
+    return prepareVersionedTransaction(
+      args as CreateActionPostResponseArgs<VersionedTransaction>,
+    );
+  }
+}
+
+/**
+ * Prepare a `VersionedTransaction` to be sent as the ActionPostResponse
+ */
+async function prepareVersionedTransaction({
+  fields,
+  signers,
+  reference,
+  actionIdentity,
+}: CreateActionPostResponseArgs<VersionedTransaction>): Promise<ActionPostResponse> {
+  let message = TransactionMessage.decompile(fields.transaction.message);
+
+  if (message.instructions.length <= 0) {
     throw new CreatePostResponseError("at least 1 instruction is required");
   }
 
   if (actionIdentity) {
     const { instruction, reference: finalReference } =
       createActionIdentifierInstruction(actionIdentity, reference);
-    transaction.add(instruction);
 
-    const memoId = new PublicKey(MEMO_PROGRAM_ID);
-    const nonMemoIndex = transaction.instructions.findIndex(
-      (ix) => ix.programId.toBase58() !== memoId.toBase58(),
+    message.instructions.push(instruction);
+    message.instructions = injectReferencesToInstructions(
+      message.instructions,
+      actionIdentity.publicKey,
+      finalReference,
     );
-    if (nonMemoIndex == -1) {
-      throw new CreatePostResponseError(
-        "transaction requires at least 1 non-memo instruction",
-      );
-    }
-
-    transaction.instructions[nonMemoIndex].keys.push({
-      pubkey: actionIdentity.publicKey,
-      isWritable: false,
-      isSigner: false,
-    });
-    transaction.instructions[nonMemoIndex].keys.push({
-      pubkey: finalReference,
-      isWritable: false,
-      isSigner: false,
-    });
   }
 
-  if (signers && signers.length) transaction.partialSign(...signers);
+  // recompile the message correctly based on the original version
+  if (fields.transaction.version == "legacy") {
+    fields.transaction.message = message.compileToLegacyMessage();
+  } else {
+    fields.transaction.message = message.compileToV0Message();
+  }
+
+  if (signers && signers.length) fields.transaction.sign(signers);
+
+  return Object.assign(fields, {
+    transaction: Buffer.from(fields.transaction.serialize()).toString("base64"),
+  });
+}
+
+/**
+ * Prepare a legacy `Transaction` to be sent as the `ActionPostResponse`
+ */
+async function prepareLegacyTransaction({
+  fields,
+  signers,
+  reference,
+  actionIdentity,
+}: CreateActionPostResponseArgs<Transaction>): Promise<ActionPostResponse> {
+  if (fields.transaction.instructions.length <= 0) {
+    throw new CreatePostResponseError("at least 1 instruction is required");
+  }
+
+  if (actionIdentity) {
+    const { instruction, reference: finalReference } =
+      createActionIdentifierInstruction(actionIdentity, reference);
+
+    fields.transaction.add(instruction);
+    fields.transaction.instructions = injectReferencesToInstructions(
+      fields.transaction.instructions,
+      actionIdentity.publicKey,
+      finalReference,
+    );
+  }
+
+  if (signers && signers.length) fields.transaction.partialSign(...signers);
 
   return Object.assign(fields, {
     transaction: Buffer.from(
-      transaction.serialize({ requireAllSignatures: false }),
+      fields.transaction.serialize({ requireAllSignatures: false }),
     ).toString("base64"),
   });
+}
+
+function injectReferencesToInstructions(
+  instructions: TransactionInstruction[],
+  actionIdentity: PublicKey,
+  reference: PublicKey,
+): TransactionInstruction[] {
+  // locate a non-memo instruction
+  const memoId = new PublicKey(MEMO_PROGRAM_ID);
+  const nonMemoIndex = instructions.findIndex(
+    (ix) => ix.programId.toBase58() !== memoId.toBase58(),
+  );
+
+  if (nonMemoIndex == -1) {
+    throw new CreatePostResponseError(
+      "transaction requires at least 1 non-memo instruction",
+    );
+  }
+
+  // insert the 2 reference keys as non signers
+  instructions[nonMemoIndex].keys.push({
+    pubkey: actionIdentity,
+    isWritable: false,
+    isSigner: false,
+  });
+  instructions[nonMemoIndex].keys.push({
+    pubkey: reference,
+    isWritable: false,
+    isSigner: false,
+  });
+
+  return instructions;
 }
