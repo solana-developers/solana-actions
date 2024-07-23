@@ -1,5 +1,12 @@
 # @solana/actions
 
+## 1.4.0
+
+### Minor Changes
+
+- added `ACTIONS_CORS_HEADERS_MIDDLEWARE` constant for frameworks that use
+  middleware to set CORS headers (like Hono, Express, and Fastify)
+
 ## 1.3.0
 
 ### Minor Changes
