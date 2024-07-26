@@ -73,10 +73,10 @@ export interface LinkedAction {
   /** button text rendered to the user */
   label: string;
   /** parameters used to accept user input within an action */
-  parameters?: TypedParameter[];
+  parameters?: TypedActionParameter[];
 }
 
-export type TypedParameter<
+export type TypedActionParameter<
   T extends ActionParameterType = ActionParameterType,
 > = T extends SelectableParameterType
   ? ActionParameterSelectable<T>
@@ -85,22 +85,32 @@ export type TypedParameter<
 /**
  * Parameter to accept user input within an action
  */
-export interface ActionParameter<T extends ActionParameterType> {
+export interface ActionParameter<T extends ActionParameterType, M = MinMax<T>> {
   /** input field type */
   type?: T;
-  /** regular expression pattern to validate user input client side */
-  pattern?: string;
-  /** human readable description of the `pattern` */
-  patternDescription?: string;
   /** parameter name in url */
   name: string;
   /** placeholder text for the user input field */
   label?: string;
   /** declare if this field is required (defaults to `false`) */
   required?: boolean;
+  /** regular expression pattern to validate user input client side */
+  pattern?: string;
+  /** human-readable description of the `type` and/or `pattern`, represents a caption and error, if value doesn't match */
+  patternDescription?: string;
+  /** the minimum value allowed based on the `type` */
+  min?: M;
+  /** the maximum value allowed based on the `type` */
+  max?: M;
 }
 
-export type GeneralParameterType =
+type MinMax<T extends ActionParameterType> = T extends "date" | "datetime-local"
+  ? string
+  : T extends "radio" | "select"
+  ? never
+  : number;
+
+type GeneralParameterType =
   | "text"
   | "email"
   | "url"
@@ -109,7 +119,7 @@ export type GeneralParameterType =
   | "datetime-local"
   | "textarea";
 
-export type SelectableParameterType = "select" | "radio" | "checkbox";
+type SelectableParameterType = "select" | "radio" | "checkbox";
 
 /**
  * Input field type to present to the user. Normally resembling the respective
@@ -122,7 +132,7 @@ export type ActionParameterType =
   | SelectableParameterType;
 
 export interface ActionParameterSelectable<T extends ActionParameterType>
-  extends Omit<ActionParameter<T>, "pattern" | "patternDescription"> {
+  extends Omit<ActionParameter<T>, "pattern"> {
   /**
    * Listing of the options the user should be able to select from
    */
@@ -139,9 +149,15 @@ export interface ActionParameterSelectable<T extends ActionParameterType>
 /**
  * Response body payload sent via the Action POST Request
  */
-export interface ActionPostRequest {
+export interface ActionPostRequest<T = string> {
   /** base58-encoded public key of an account that may sign the transaction */
   account: string;
+  /**
+   * Key-value map of parameter values from user's input
+   * - key - parameter name
+   * - value - input value (by default type of `string`, if multi-option, type of `Array<string>`
+   */
+  data?: Record<keyof T, string | Array<string>>;
 }
 
 /**

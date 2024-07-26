@@ -249,16 +249,20 @@ from the user:
 export interface ActionParameter {
   /** input field type */
   type?: ActionParameterType;
-  /** regular expression pattern to validate user input client side */
-  pattern?: string;
-  /** human readable description of the `pattern` */
-  patternDescription?: string;
   /** parameter name in url */
   name: string;
   /** placeholder text for the user input field */
   label?: string;
   /** declare if this field is required (defaults to `false`) */
   required?: boolean;
+  /** regular expression pattern to validate user input client side */
+  pattern?: string;
+  /** human-readable description of the `type` and/or `pattern`, represents a caption and error, if value doesn't match */
+  patternDescription?: string;
+  /** the minimum value allowed based on the `type` */
+  min?: string | number;
+  /** the maximum value allowed based on the `type` */
+  max?: string | number;
 }
 ```
 
@@ -267,9 +271,16 @@ regular expression pattern should by used by blink-clients to validate user
 input before before making the POST request. If the `pattern` is not a valid
 regular expression, it should be ignored by clients.
 
-The `patternDescription` is a human readable message that describes the regular
-expression pattern. If `pattern` is provided, the `patternDescription` is
+The `patternDescription` is a human readable description of the expected input
+requests from the user. If `pattern` is provided, the `patternDescription` is
 required to be provided.
+
+The `min` and `max` values allows the input to set a lower and/or upper bounds
+of the input requested from the user (i.e. min/max number and or min/max
+character length), and should be used for client side validation. For input
+`type`s of `date` or `datetime-local`, these values should be a string dates.
+For other string based input `type`s, the values should be numbers representing
+their min/max character length.
 
 If the user input value is not considered valid per the `pattern`, the user
 should receive a client side error message indicating the input field is not
