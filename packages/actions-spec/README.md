@@ -234,8 +234,12 @@ export interface LinkedAction {
   href: string;
   /** button text rendered to the user */
   label: string;
-  /** Parameter to accept user input within an action */
-  parameters?: Array<ActionParameter | ActionParameterSelectable>;
+  /**
+   * Parameters to accept user input within an action
+   * @see {ActionParameter}
+   * @see {ActionParameterSelectable}
+   */
+  parameters?: Array<TypedActionParameter>;
 }
 ```
 
@@ -245,6 +249,7 @@ from the user:
 ```ts filename="ActionParameter"
 /**
  * Parameter to accept user input within an action
+ * note: for ease of reading, this is a simplified type of the actual
  */
 export interface ActionParameter {
   /** input field type */
@@ -366,6 +371,9 @@ This `ActionParameterSelectable` can be simplified to the following type
 definition:
 
 ```ts filename="ActionParameterSelectable"
+/**
+ * note: for ease of reading, this is a simplified type of the actual
+ */
 interface ActionParameterSelectable extends ActionParameter {
   options: Array<{
     /** displayed UI label of this selectable option */

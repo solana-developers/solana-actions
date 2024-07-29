@@ -72,8 +72,12 @@ export interface LinkedAction {
   href: string;
   /** button text rendered to the user */
   label: string;
-  /** parameters used to accept user input within an action */
-  parameters?: TypedActionParameter[];
+  /**
+   * Parameters used to accept user input within an action
+   * @see {ActionParameter}
+   * @see {ActionParameterSelectable}
+   */
+  parameters?: Array<TypedActionParameter>;
 }
 
 export type TypedActionParameter<
