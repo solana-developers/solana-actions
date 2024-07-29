@@ -18,16 +18,6 @@ to a decentralized app; in Discord, a bot might expand the blink into an
 interactive set of buttons. This pushes the ability to interact on-chain to any
 web surface capable of displaying a URL.
 
-## Simplified Type Definitions
-
-The types and interfaces declared within this readme files are often the
-simplified version of the types to aid in readability.
-
-For better type safety and improved developer experience, the
-`@solana/actions-spec` package contains more complex type definitions. You can
-find the
-[source code for them here](https://github.com/solana-developers/solana-actions/blob/main/packages/actions-spec/index.d.ts).
-
 ## Contributing
 
 If you would like to propose an update the Solana Actions specification, please
@@ -234,168 +224,20 @@ export interface LinkedAction {
   href: string;
   /** button text rendered to the user */
   label: string;
-  /**
-   * Parameters to accept user input within an action
-   * @see {ActionParameter}
-   * @see {ActionParameterSelectable}
-   */
-  parameters?: Array<TypedActionParameter>;
+  /** Parameter to accept user input within an action */
+  parameters?: [ActionParameter];
 }
-```
 
-The `ActionParameter` allows declaring what input the Action API is requesting
-from the user:
-
-```ts filename="ActionParameter"
-/**
- * Parameter to accept user input within an action
- * note: for ease of reading, this is a simplified type of the actual
- */
+/** Parameter to accept user input within an action */
 export interface ActionParameter {
-  /** input field type */
-  type?: ActionParameterType;
   /** parameter name in url */
   name: string;
   /** placeholder text for the user input field */
   label?: string;
   /** declare if this field is required (defaults to `false`) */
   required?: boolean;
-  /** regular expression pattern to validate user input client side */
-  pattern?: string;
-  /** human-readable description of the `type` and/or `pattern`, represents a caption and error, if value doesn't match */
-  patternDescription?: string;
-  /** the minimum value allowed based on the `type` */
-  min?: string | number;
-  /** the maximum value allowed based on the `type` */
-  max?: string | number;
 }
 ```
-
-The `pattern` should be a string equivalent of a valid regular expression. This
-regular expression pattern should by used by blink-clients to validate user
-input before before making the POST request. If the `pattern` is not a valid
-regular expression, it should be ignored by clients.
-
-The `patternDescription` is a human readable description of the expected input
-requests from the user. If `pattern` is provided, the `patternDescription` is
-required to be provided.
-
-The `min` and `max` values allows the input to set a lower and/or upper bounds
-of the input requested from the user (i.e. min/max number and or min/max
-character length), and should be used for client side validation. For input
-`type`s of `date` or `datetime-local`, these values should be a string dates.
-For other string based input `type`s, the values should be numbers representing
-their min/max character length.
-
-If the user input value is not considered valid per the `pattern`, the user
-should receive a client side error message indicating the input field is not
-valid and displayed the `patternDescription` string.
-
-The `type` field allows the Action API to declare more specific user input
-fields, providing better client side validation and improving the user
-experience. In many cases, this type will resemble the standard
-[HTML input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
-
-The `ActionParameterType` can be simplified to the following type:
-
-```ts filename="ActionParameterType"
-/**
- * Input field type to present to the user
- * @default `text`
- */
-export type ActionParameterType =
-  | "text"
-  | "email"
-  | "url"
-  | "number"
-  | "date"
-  | "datetime-local"
-  | "checkbox"
-  | "radio"
-  | "textarea"
-  | "select";
-```
-
-Each of the `type` values should normally result in a user input field that
-resembles a standard HTML `input` element of the corresponding `type` (i.e.
-`<input type="email" />`) to provide better client side validation and user
-experience:
-
-- `text` - equivalent of HTML
-  [“text” input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/text)
-  element
-- `email` - equivalent of HTML
-  [“email” input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email)
-  element
-- `url` - equivalent of HTML
-  [“url” input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/url)
-  element
-- `number` - equivalent of HTML
-  [“number” input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/number)
-  element
-- `date` - equivalent of HTML
-  [“date” input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date)
-  element
-- `datetime-local` - equivalent of HTML
-  [“datetime-local” input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local)
-  element
-- `checkbox` - equivalent to a grouping of standard HTML
-  [“checkbox” input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox)
-  elements. The Action API should return `options` as detailed below. The user
-  should be able to select multiple of the provided checkbox options.
-- `radio` - equivalent to a grouping of standard HTML
-  [“radio” input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio)
-  elements. The Action API should return `options` as detailed below. The user
-  should be able to select only one of the provided radio options.
-- Other HTML input type equivalents not specified above (`hidden`, `button`,
-  `submit`, `file`, etc) are not supported at this time.
-
-In addition to the elements resembling HTML input types above, the following
-user input elements are also supported:
-
-- `textarea` - equivalent of HTML
-  [textarea element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea).
-  Allowing the user provide multi-line input.
-- `select` - equivalent of HTML
-  [select element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select),
-  allowing the user to experience a “dropdown” style field. The Action API
-  should return `options` as detailed below.
-
-When `type` is set as `select`, `checkbox`, or `radio` then the Action API
-should include an array of `options` that each provide a `label` and `value` at
-a minimum. Each option may also have a `selected` value to inform the
-blink-client which of the options should be selected by default for the user
-(see `checkbox` and `radio` for differences).
-
-This `ActionParameterSelectable` can be simplified to the following type
-definition:
-
-```ts filename="ActionParameterSelectable"
-/**
- * note: for ease of reading, this is a simplified type of the actual
- */
-interface ActionParameterSelectable extends ActionParameter {
-  options: Array<{
-    /** displayed UI label of this selectable option */
-    label: string;
-    /** value of this selectable option */
-    value: string;
-    /** whether or not this option should be selected by default */
-    selected?: boolean;
-  }>;
-}
-```
-
-If no `type` is set or an unknown/unsupported value is set, blink-client should
-default to `text` and render a simple text input.
-
-The Action API is still responsible to validate and sanitize all data from the
-user input parameters, enforcing any “required” user input as necessary.
-
-For platforms other that HTML/web based ones (like native mobile), the
-equivalent native user input component should be used to achieve the equivalent
-experience and client side validation as the HTML/web input types described
-above.
 
 ### POST Request
 
