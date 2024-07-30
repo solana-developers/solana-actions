@@ -47,13 +47,15 @@ export interface ActionGetRequest {}
 export type ActionType = "action" | "completed";
 
 /**
+ * Response body payload returned from the initial Action GET Request
+ */
+export type ActionGetResponse = Action<"action">;
+
+/**
  * A single Solana Action
  */
 export interface Action<T extends ActionType = "action"> {
-  /**
-   * action type to
-   * @default `action`
-   */
+  /** @default `action` */
   type?: T;
   /** image url that represents the source of the action request */
   icon: string;
@@ -73,11 +75,6 @@ export interface Action<T extends ActionType = "action"> {
   /** non-fatal error message to be displayed to the user */
   error?: ActionError;
 }
-
-/**
- * Response body payload returned from the initial Action GET Request
- */
-export type ActionGetResponse = Action<"action">;
 
 /**
  * Related action on a single endpoint
@@ -180,14 +177,6 @@ export interface ActionPostRequest<T = string> {
 }
 
 /**
- * The next action to be presented to the user after the previous action was successful
- * (i.e. after the transaction was confirmed on-chain)
- */
-export type NextAction<T extends ActionType> = T extends "completed"
-  ? Omit<Action<T>, "links">
-  : Action<T>;
-
-/**
  * Response body payload returned from the Action POST Request
  */
 export interface ActionPostResponse<T extends ActionType = ActionType> {
@@ -208,6 +197,14 @@ export interface ActionPostResponse<T extends ActionType = ActionType> {
     next: string | NextAction<T | "action">;
   };
 }
+
+/**
+ * The next action to be presented to the user after the previous action was successful
+ * (i.e. after the transaction was confirmed on-chain)
+ */
+export type NextAction<T extends ActionType> = T extends "completed"
+  ? Omit<Action<T>, "links">
+  : Action<T>;
 
 /**
  * Response body payload sent via POST request to obtain the next action
