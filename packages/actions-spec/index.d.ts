@@ -42,9 +42,19 @@ export interface ActionRuleObject {
 export interface ActionGetRequest {}
 
 /**
- * Response body payload returned from the Action GET Request
+ * Type of action to determine client side handling
  */
-export interface ActionGetResponse {
+export type ActionType = "action" | "completed";
+
+/**
+ * A single Solana Action
+ */
+export interface Action<T extends ActionType = "action"> {
+  /**
+   * action type to
+   * @default `action`
+   */
+  type?: T;
   /** image url that represents the source of the action request */
   icon: string;
   /** describes the source of the action request */
@@ -63,6 +73,11 @@ export interface ActionGetResponse {
   /** non-fatal error message to be displayed to the user */
   error?: ActionError;
 }
+
+/**
+ * Response body payload returned from the initial Action GET Request
+ */
+export type ActionGetResponse = Action<"action">;
 
 /**
  * Related action on a single endpoint
@@ -165,13 +180,44 @@ export interface ActionPostRequest<T = string> {
 }
 
 /**
+ * The next action to be presented to the user after the previous action was successful
+ * (i.e. after the transaction was confirmed on-chain)
+ */
+export type NextAction<T extends ActionType> = T extends "completed"
+  ? Omit<Action<T>, "links">
+  : Action<T>;
+
+/**
  * Response body payload returned from the Action POST Request
  */
-export interface ActionPostResponse {
+export interface ActionPostResponse<T extends ActionType = ActionType> {
   /** base64 encoded serialized transaction */
   transaction: string;
   /** describes the nature of the transaction */
   message?: string;
+  links?: {
+    /**
+     * the next action in a successive chain of actions to be obtained and/or rendered
+     * to the user after the previous was successful
+     *
+     * @param `string` - a same origin callback url used to fetch the next action in the chain
+     *    - this callback url will receive a POST request with a body of `NextActionPostRequest`
+     *    - and should respond with a `NextAction`
+     * @param `NextAction` - the metadata for the next action to render upon transaction confirmation
+     */
+    next: string | NextAction<T | "action">;
+  };
+}
+
+/**
+ * Response body payload sent via POST request to obtain the next action
+ * in a successive chain of actions
+ *
+ * @see {@link NextAction} should be returned as the POST response
+ */
+export interface NextActionPostRequest extends ActionPostRequest {
+  /** signature produced from the previous action (either a transaction id or message signature) */
+  signature: string;
 }
 
 /**
