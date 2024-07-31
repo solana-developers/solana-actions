@@ -49,14 +49,17 @@ export type ActionType = "action" | "completed";
 /**
  * Response body payload returned from the initial Action GET Request
  */
-export type ActionGetResponse = Action<"action">;
+export interface ActionGetResponse extends Omit<Action, "type"> {
+  type?: "action";
+}
 
 /**
  * A single Solana Action
  */
 export interface Action<T extends ActionType = "action"> {
   /** @default `action` */
-  type?: T;
+  /** type of Action to present to the user */
+  type: T;
   /** image url that represents the source of the action request */
   icon: string;
   /** describes the source of the action request */
@@ -194,7 +197,7 @@ export interface ActionPostResponse<T extends ActionType = ActionType> {
      *    - and should respond with a `NextAction`
      * @param `NextAction` - the metadata for the next action to render upon transaction confirmation
      */
-    next: string | NextAction<T | "action">;
+    next: string | NextAction<T>;
   };
 }
 
