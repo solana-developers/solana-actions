@@ -182,7 +182,7 @@ export interface ActionPostRequest<T = string> {
 /**
  * Response body payload returned from the Action POST Request
  */
-export interface ActionPostResponse {
+export interface ActionPostResponse<T extends ActionType = ActionType> {
   /** base64 encoded serialized transaction */
   transaction: string;
   /** describes the nature of the transaction */
