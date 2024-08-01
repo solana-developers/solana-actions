@@ -164,12 +164,9 @@ export type ActionType = "action" | "completed";
 
 export type ActionGetResponse = Action<"action">;
 
-/**
- * A single Solana Action
- */
 export interface Action<T extends ActionType = "action"> {
-  /** @default `action` */
-  type?: T;
+  /** type of Action to present to the user */
+  type: T;
   /** image url that represents the source of the action request */
   icon: string;
   /** describes the source of the action request */
@@ -228,7 +225,7 @@ export interface Action<T extends ActionType = "action"> {
 
 ```ts filename="ActionError"
 export interface ActionError {
-  /** non-fatal error message to be displayed to the user */
+  /** simple error message to be displayed to the user */
   message: string;
 }
 ```
@@ -560,9 +557,7 @@ To chain multiple actions together, in any `ActionPostResponse` include a
 ```ts filename="NextActionLink"
 export type NextActionLink = PostNextActionLink | InlineNextActionLink;
 
-/**
- * @see {NextActionPostRequest}
- */
+/** @see {NextActionPostRequest} */
 export interface PostNextActionLink {
   /** Indicates the type of the link. */
   type: "post";

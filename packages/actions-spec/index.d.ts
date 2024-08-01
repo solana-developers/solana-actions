@@ -57,7 +57,6 @@ export interface ActionGetResponse extends Omit<Action, "type"> {
  * A single Solana Action
  */
 export interface Action<T extends ActionType = "action"> {
-  /** @default `action` */
   /** type of Action to present to the user */
   type: T;
   /** image url that represents the source of the action request */
@@ -253,6 +252,6 @@ export interface NextActionPostRequest extends ActionPostRequest {
  * Error message that can be returned from an Actions API
  */
 export interface ActionError {
-  /**  */
+  /** simple error message to be displayed to the user */
   message: string;
 }
