@@ -189,7 +189,8 @@ export interface ActionPostResponse<T extends ActionType = ActionType> {
   message?: string;
   links?: {
     /**
-     * The next action in a successive chain of actions to be obtained after the previous was successful.
+     * The next action in a successive chain of actions to be obtained after
+     * the previous was successful.
      */
     next: NextActionLink;
   };

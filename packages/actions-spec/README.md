@@ -469,10 +469,10 @@ export interface ActionPostResponse<T extends ActionType = ActionType> {
   message?: string;
   links?: {
     /**
-     * the next action in a successive chain of actions to be obtained and/or rendered
-     * to the user after the previous was successful
+     * The next action in a successive chain of actions to be obtained after
+     * the previous was successful.
      */
-    next: string | NextAction<T | "action">;
+    next: NextActionLink;
   };
 }
 ```
@@ -489,9 +489,8 @@ export interface ActionPostResponse<T extends ActionType = ActionType> {
 
 - `links.next` - An optional value use to "chain" multiple Actions together in
   series. After the included `transaction` has been confirm on-chain, this
-  `links.next` can be used to fetch the next action (via a callback url) or
-  display the provided `NextAction`. See [Action Chaining](#action-chaining) for
-  more details.
+  `links.next` can be used to fetch the next action. See
+  [Action Chaining](#action-chaining) for more details.
 
 - The client and application should allow additional fields in the request body
   and response body, which may be added by future specification updates.
@@ -546,20 +545,39 @@ within blinks, including:
 - refreshing the blink metadata after a successful transaction
 - receive an API callback with the transaction signature for additional
   validation and logic on the Action API server
+- customized "success" messages with updated action metadata
 
-To chain multiple actions together, include a `links.next` value in the
-`ActionPostResponse` payload of either:
+To chain multiple actions together, in any `ActionPostResponse` include a
+`links.next` of either:
 
-- `string` - Same origin callback url to receive a `POST` request with the
-  `signature` and user's `account` in the body. This callback url should respond
-  with a `NextAction`.
-- `NextAction` - The metadata for the next action to present to the user
-  immediately after the transaction has confirmed. No callback will be made.
+- `PostNextActionLink` - POST request link with a same origin callback url to
+  receive the `signature` and user's `account` in the body. This callback url
+  should respond with a `NextAction`.
+- `InlineNextActionLink` - Inline metadata for the next action to be presented
+  to the user immediately after the transaction has confirmed. No callback will
+  be made.
 
-```ts filename="NextActionPostRequest"
-export interface NextActionPostRequest extends ActionPostRequest {
-  /** signature produced from the previous action (either a transaction id or message signature) */
-  signature: string;
+```ts filename="NextActionLink"
+export type NextActionLink = PostNextActionLink | InlineNextActionLink;
+
+/**
+ * @see {NextActionPostRequest}
+ */
+export interface PostNextActionLink {
+  /** Indicates the type of the link. */
+  type: "post";
+  /** Relative or same origin URL to which the POST request should be made. */
+  href: string;
+}
+
+/**
+ * Represents an inline next action embedded within the current context.
+ */
+export interface InlineNextActionLink {
+  /** Indicates the type of the link. */
+  type: "inline";
+  /** The next action to be performed */
+  action: NextAction;
 }
 ```
 
@@ -575,15 +593,11 @@ callback request should be made. Blink clients should display an error notifying
 the user.
 
 ```ts filename="NextAction"
-/**
- * The next action to be presented to the user after the previous action was successful
- * (i.e. after the transaction was confirmed on-chain)
- *  - `action` - a regular action for the user to interact with
- *  - `completed` - metadata to update the blink UI with. end of the action chain.
- */
-export type NextAction<T extends ActionType> = T extends "completed"
-  ? Omit<Action<T>, "links">
-  : Action<T>;
+/** The next action to be performed */
+export type NextAction = Action<"action"> | CompletedAction;
+
+/** The completed action, used to declare the "completed" state within action chaining. */
+export type CompletedAction = Omit<Action<"completed">, "links">;
 ```
 
 A `NextAction` should be presented to the user via blink clients in one of two
