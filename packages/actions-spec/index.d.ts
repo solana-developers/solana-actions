@@ -126,8 +126,8 @@ export interface ActionParameter<T extends ActionParameterType, M = MinMax<T>> {
 type MinMax<T extends ActionParameterType> = T extends "date" | "datetime-local"
   ? string
   : T extends "radio" | "select"
-    ? never
-    : number;
+  ? never
+  : number;
 
 type GeneralParameterType =
   | "text"
@@ -199,8 +199,8 @@ export interface ActionPostResponse<T extends ActionType = ActionType> {
  * Represents a link to the next action to be performed.
  * The next action can be either a POST request to a callback URL or an inline action.
  *
- * @see PostNextActionLink
- * @see InlineNextActionLink
+ * @see {@link PostNextActionLink}
+ * @see {@link InlineNextActionLink}
  */
 export type NextActionLink = PostNextActionLink | InlineNextActionLink;
 
@@ -210,6 +210,9 @@ export type NextActionLink = PostNextActionLink | InlineNextActionLink;
  * This is a same origin callback URL used to fetch the next action in the chain.
  * - This callback URL will receive a POST request with a body of `NextActionPostRequest`.
  * - It should respond with a `NextAction`.
+ *
+ * @see {@link NextAction}
+ * @see {@link NextActionPostRequest}
  */
 export interface PostNextActionLink {
   /** Indicates the type of the link. */
@@ -249,6 +252,6 @@ export interface NextActionPostRequest extends ActionPostRequest {
  * Error message that can be returned from an Actions API
  */
 export interface ActionError {
-  /** non-fatal error message to be displayed to the user */
+  /**  */
   message: string;
 }
