@@ -485,8 +485,8 @@ export interface ActionPostResponse<T extends ActionType = ActionType> {
   discount applied to a purchase, or a thank you note.
 
 - `links.next` - An optional value use to "chain" multiple Actions together in
-  series. After the included `transaction` has been confirm on-chain, this
-  `links.next` can be used to fetch the next action. See
+  series. After the included `transaction` has been confirmed on-chain, the
+  client can fetch and render the next action. See
   [Action Chaining](#action-chaining) for more details.
 
 - The client and application should allow additional fields in the request body
@@ -534,7 +534,7 @@ Solana Actions can be "chained" together in a successive series. After an
 Action's transaction is confirmed on-chain, the next action can be obtained and
 presented to the user.
 
-Action chaining allows developer to build more complex and dynamic experiences
+Action chaining allows developers to build more complex and dynamic experiences
 within blinks, including:
 
 - providing multiple transactions (and eventually sign message) to a user
@@ -542,7 +542,8 @@ within blinks, including:
 - refreshing the blink metadata after a successful transaction
 - receive an API callback with the transaction signature for additional
   validation and logic on the Action API server
-- customized "success" messages with updated action metadata
+- customized "success" messages by updating the displayed metadata (e.g. a new
+  image and description)
 
 To chain multiple actions together, in any `ActionPostResponse` include a
 `links.next` of either:
@@ -576,6 +577,8 @@ export interface InlineNextActionLink {
 }
 ```
 
+##### NextAction
+
 After the `ActionPostResponse` included `transaction` is signed by the user and
 confirmed on-chain, the blink client should either:
 
@@ -595,16 +598,16 @@ export type NextAction = Action<"action"> | CompletedAction;
 export type CompletedAction = Omit<Action<"completed">, "links">;
 ```
 
-A `NextAction` should be presented to the user via blink clients in one of two
-ways, based on the `type`:
+Based on the `type`, the next action should be presented to the user via blink
+clients in one of the following ways:
 
 - `action` - (default) A standard action that will allow the user to see the
   included Action metadata, interact with the provided `LinkedActions`, and
   continue to chain any following actions.
 
 - `completed` - The terminal state of an action chain that can update the blink
-  UI with the included Action metadata to the user, but will not allow the user
-  to execute further actions.
+  UI with the included Action metadata, but will not allow the user to execute
+  further actions.
 
 If no `links.next` is not provided, blink clients should assume the current
 action is final action in the chain, presenting their "completed" UI state after
