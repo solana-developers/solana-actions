@@ -126,8 +126,8 @@ export interface ActionParameter<T extends ActionParameterType, M = MinMax<T>> {
 type MinMax<T extends ActionParameterType> = T extends "date" | "datetime-local"
   ? string
   : T extends "radio" | "select"
-  ? never
-  : number;
+    ? never
+    : number;
 
 type GeneralParameterType =
   | "text"
@@ -189,25 +189,50 @@ export interface ActionPostResponse<T extends ActionType = ActionType> {
   message?: string;
   links?: {
     /**
-     * the next action in a successive chain of actions to be obtained and/or rendered
-     * to the user after the previous was successful
-     *
-     * @param `string` - a same origin callback url used to fetch the next action in the chain
-     *    - this callback url will receive a POST request with a body of `NextActionPostRequest`
-     *    - and should respond with a `NextAction`
-     * @param `NextAction` - the metadata for the next action to render upon transaction confirmation
+     * The next action in a successive chain of actions to be obtained after the previous was successful.
      */
-    next: string | NextAction<T>;
+    next: NextActionLink;
   };
 }
 
 /**
- * The next action to be presented to the user after the previous action was successful
- * (i.e. after the transaction was confirmed on-chain)
+ * Represents a link to the next action to be performed.
+ * The next action can be either a POST request to a callback URL or an inline action.
+ *
+ * @see PostNextActionLink
+ * @see InlineNextActionLink
  */
-export type NextAction<T extends ActionType> = T extends "completed"
-  ? Omit<Action<T>, "links">
-  : Action<T>;
+export type NextActionLink = PostNextActionLink | InlineNextActionLink;
+
+/**
+ * Represents a POST request link to the next action.
+ *
+ * This is a same origin callback URL used to fetch the next action in the chain.
+ * - This callback URL will receive a POST request with a body of `NextActionPostRequest`.
+ * - It should respond with a `NextAction`.
+ */
+export interface PostNextActionLink {
+  /** Indicates the type of the link. */
+  type: "post";
+  /** Relative or same origin URL to which the POST request should be made. */
+  href: string;
+}
+
+/**
+ * Represents an inline next action embedded within the current context.
+ */
+export interface InlineNextActionLink {
+  /** Indicates the type of the link. */
+  type: "inline";
+  /** The next action to be performed */
+  action: NextAction;
+}
+
+/** The completed action, used to declare the "completed" state within action chaining. */
+export type CompletedAction = Omit<Action<"completed">, "links">;
+
+/** The next action to be performed */
+export type NextAction = Action<"action"> | CompletedAction;
 
 /**
  * Response body payload sent via POST request to obtain the next action
