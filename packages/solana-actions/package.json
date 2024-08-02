@@ -35,6 +35,7 @@
     "reinstall": "npm run nuke && npm install",
     "clean": "shx rm -rf lib **/*.tsbuildinfo || true",
     "build": "tsc --build --verbose tsconfig.all.json",
+    "build:release": "npm run clean && npm run build",
     "postbuild": "shx echo '{ \"type\": \"commonjs\" }' > lib/cjs/package.json",
     "watch": "tsc --build --verbose --watch tsconfig.all.json",
     "prettier": "prettier --write '{*,**/*}.{ts,tsx,js,jsx,css,json}'",
@@ -45,8 +46,7 @@
     "docs": "shx rm -rf docs && npx typedoc && shx cp .nojekyll docs/",
     "deploy:docs": "npm run docs && npx gh-pages --dist docs/ --dotfiles",
     "version": "changeset version && git add -A && git commit -m \"chore: version\"",
-    "release": "npm run clean && npm run build",
-    "publish": "npm run release && changeset publish && git add -A && git push --follow-tags && npm run deploy:docs"
+    "publish": "npm run build:release && changeset publish && git add -A && git push --follow-tags && npm run deploy:docs"
   },
   "dependencies": {
     "@solana/actions-spec": "^2.0.0",
