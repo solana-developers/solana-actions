@@ -69,7 +69,6 @@ export interface Action<T extends ActionType = "action"> {
   label: string;
   /** UI state for the button being rendered to the user */
   disabled?: boolean;
-  /**  */
   links?: {
     /** list of related Actions a user could perform */
     actions: LinkedAction[];
