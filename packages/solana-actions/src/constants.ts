@@ -35,6 +35,7 @@ export const ACTIONS_CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Methods": "GET,POST,PUT,OPTIONS",
   "Access-Control-Allow-Headers":
     "Content-Type, Authorization, Content-Encoding, Accept-Encoding, X-Action-Version, X-Blockchain-Ids",
+  "Access-Control-Expose-Headers": "X-Action-Version, X-Blockchain-Ids",
   "Content-Type": "application/json",
 };
 
@@ -53,6 +54,10 @@ export const ACTIONS_CORS_HEADERS_MIDDLEWARE = {
     "Authorization",
     "Content-Encoding",
     "Accept-Encoding",
+    "X-Action-Version",
+    "X-Blockchain-Ids",
+  ],
+  exposedHeaders: [
     "X-Action-Version",
     "X-Blockchain-Ids",
   ],
