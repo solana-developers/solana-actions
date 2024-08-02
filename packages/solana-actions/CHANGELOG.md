@@ -1,5 +1,11 @@
 # @solana/actions
 
+## 1.6.1
+
+### Patch Changes
+
+- added missing headers
+
 ## 1.6.0
 
 ### Minor Changes
