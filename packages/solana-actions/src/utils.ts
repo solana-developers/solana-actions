@@ -9,7 +9,7 @@ type HeaderHelperArgs = {
 /**
  * Construct valid headers for use with Action APIs
  */
-export function actionHeaders({
+export function createActionHeaders({
   headers,
   chainId,
   actionVersion,
@@ -35,7 +35,7 @@ export function actionHeaders({
  */
 export function actionCorsMiddleware(args: HeaderHelperArgs) {
   return (_req: any, res: any, next: Function) => {
-    res.set(actionHeaders(args));
+    res.set(createActionHeaders(args));
     next();
   };
 }
