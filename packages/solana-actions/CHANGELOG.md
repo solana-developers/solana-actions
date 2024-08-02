@@ -1,5 +1,11 @@
 # @solana/actions
 
+## 1.5.0
+
+### Minor Changes
+
+- added helper functions for headers and middleware
+
 ## 1.4.0
 
 ### Minor Changes
