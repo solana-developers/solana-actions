@@ -1,5 +1,11 @@
 # @solana/actions
 
+## 1.6.0
+
+### Minor Changes
+
+- renamed 'actionHeaders' to 'createActionsHeaders'
+
 ## 1.5.1
 
 ### Patch Changes
