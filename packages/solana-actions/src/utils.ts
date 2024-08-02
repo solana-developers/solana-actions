@@ -13,7 +13,7 @@ export function actionHeaders({
   headers,
   chainId,
   actionVersion,
-}: HeaderHelperArgs) {
+}: HeaderHelperArgs = {}) {
   if (chainId) {
     headers = Object.assign({}, headers || {}, {
       "X-Blockchain-Ids": Object.hasOwn(BLOCKCHAIN_IDS, chainId)
