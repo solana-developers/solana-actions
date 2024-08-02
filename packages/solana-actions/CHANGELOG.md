@@ -1,5 +1,11 @@
 # @solana/actions
 
+## 1.5.1
+
+### Patch Changes
+
+- fix optional argument
+
 ## 1.5.0
 
 ### Minor Changes
