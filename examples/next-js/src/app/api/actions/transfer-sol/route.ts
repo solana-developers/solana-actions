@@ -4,10 +4,10 @@
 
 import {
   ActionPostResponse,
-  ACTIONS_CORS_HEADERS,
   createPostResponse,
   ActionGetResponse,
   ActionPostRequest,
+  createActionHeaders,
 } from "@solana/actions";
 import {
   clusterApiUrl,
@@ -18,6 +18,9 @@ import {
   Transaction,
 } from "@solana/web3.js";
 import { DEFAULT_SOL_ADDRESS, DEFAULT_SOL_AMOUNT } from "./const";
+
+// create the standard headers for this route (including CORS)
+const headers = createActionHeaders();
 
 export const GET = async (req: Request) => {
   try {
@@ -64,7 +67,7 @@ export const GET = async (req: Request) => {
     };
 
     return Response.json(payload, {
-      headers: ACTIONS_CORS_HEADERS,
+      headers,
     });
   } catch (err) {
     console.log(err);
@@ -72,7 +75,7 @@ export const GET = async (req: Request) => {
     if (typeof err == "string") message = err;
     return new Response(message, {
       status: 400,
-      headers: ACTIONS_CORS_HEADERS,
+      headers,
     });
   }
 };
@@ -80,7 +83,7 @@ export const GET = async (req: Request) => {
 // DO NOT FORGET TO INCLUDE THE `OPTIONS` HTTP METHOD
 // THIS WILL ENSURE CORS WORKS FOR BLINKS
 export const OPTIONS = async (req: Request) => {
-  return new Response(null, { headers: ACTIONS_CORS_HEADERS });
+  return new Response(null, { headers });
 };
 
 export const POST = async (req: Request) => {
@@ -97,7 +100,7 @@ export const POST = async (req: Request) => {
     } catch (err) {
       return new Response('Invalid "account" provided', {
         status: 400,
-        headers: ACTIONS_CORS_HEADERS,
+        headers,
       });
     }
 
@@ -151,7 +154,7 @@ export const POST = async (req: Request) => {
     });
 
     return Response.json(payload, {
-      headers: ACTIONS_CORS_HEADERS,
+      headers,
     });
   } catch (err) {
     console.log(err);
@@ -159,7 +162,7 @@ export const POST = async (req: Request) => {
     if (typeof err == "string") message = err;
     return new Response(message, {
       status: 400,
-      headers: ACTIONS_CORS_HEADERS,
+      headers,
     });
   }
 };

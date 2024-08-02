@@ -15,7 +15,7 @@
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-navigation-menu": "^1.1.4",
     "@radix-ui/react-slot": "^1.0.2",
-    "@solana/actions": "^1.4.0",
+    "@solana/actions": "^1.6.0",
     "@solana/qr-code-styling": "^1.6.0",
     "@solana/web3.js": "^1.92.3",
     "bs58": "^5.0.0",

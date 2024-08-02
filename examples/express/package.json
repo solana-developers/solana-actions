@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@solana/actions": "^1.4.0",
+    "@solana/actions": "^1.6.0",
     "@solana/web3.js": "^1.94",
     "cors": "^2.8.5",
     "express": "^4.19.2"

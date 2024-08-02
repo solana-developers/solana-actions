@@ -1,5 +1,4 @@
 import express from "express";
-import cors from "cors";
 import {
   Connection,
   Keypair,
@@ -9,10 +8,7 @@ import {
   clusterApiUrl,
   LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
-import {
-  ACTIONS_CORS_HEADERS_MIDDLEWARE,
-  createPostResponse,
-} from "@solana/actions";
+import { createPostResponse, actionCorsMiddleware } from "@solana/actions";
 
 const DEFAULT_SOL_ADDRESS = Keypair.generate().publicKey;
 const DEFAULT_SOL_AMOUNT = 1;
@@ -24,7 +20,12 @@ const BASE_URL = `http://localhost:${PORT}`;
 // Express app setup
 const app = express();
 app.use(express.json());
-app.use(cors(ACTIONS_CORS_HEADERS_MIDDLEWARE));
+
+/**
+ * The `actionCorsMiddleware` middleware will provide the correct CORS settings for Action APIs
+ * so you do not need to use an additional `cors` middleware if you do not require it for other reasons
+ */
+app.use(actionCorsMiddleware());
 
 // Routes
 app.get("/actions.json", getActionsJson);
