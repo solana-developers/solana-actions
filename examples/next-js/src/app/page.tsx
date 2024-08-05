@@ -37,12 +37,12 @@ const actionCards: Array<{
     description: "Easily transfer native SOL to any other Solana wallet.",
     icon: <WalletIcon className="size-12" />,
   },
-  // {
-  //   title: "Transfer SPL Tokens",
-  //   href: "/transfer-spl",
-  //   description: "Easily transfer SPL tokens to any other Solana wallet.",
-  //   icon: <CoinsIcon className="size-12" />,
-  // },
+  {
+    title: "Transfer SPL Tokens",
+    href: "/transfer-spl",
+    description: "Easily transfer SPL tokens to any other Solana wallet.",
+    icon: <CoinsIcon className="size-12" />,
+  },
   // {
   //   title: "Mint an NFT",
   //   href: "/mint-nft",
