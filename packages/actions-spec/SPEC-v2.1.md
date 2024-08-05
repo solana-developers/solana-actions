@@ -160,13 +160,7 @@ A `GET` response with an HTTP `OK` JSON response should include a body payload
 that follows the interface specification:
 
 ```ts filename="ActionGetResponse"
-export type ActionType = "action" | "completed";
-
-export type ActionGetResponse = Action<"action">;
-
-export interface Action<T extends ActionType = "action"> {
-  /** type of Action to present to the user */
-  type: T;
+export interface ActionGetResponse {
   /** image url that represents the source of the action request */
   icon: string;
   /** describes the source of the action request */
@@ -185,14 +179,6 @@ export interface Action<T extends ActionType = "action"> {
   error?: ActionError;
 }
 ```
-
-- `type` - The type of action being given to the user. Defaults to `action`. The
-  initial `ActionGetResponse` is required to have a type of `action`.
-
-  - `action` - Standard action that will allow the user to interact with any of
-    the `LinkedActions`
-  - `completed` - Used to declare the "completed" state within action chaining.
-    After the
 
 - `icon` - The value must be an absolute HTTP or HTTPS URL of an icon image. The
   file must be an SVG, PNG, or WebP image, or the client/wallet must reject it
@@ -224,7 +210,7 @@ export interface Action<T extends ActionType = "action"> {
 
 ```ts filename="ActionError"
 export interface ActionError {
-  /** simple error message to be displayed to the user */
+  /** non-fatal error message to be displayed to the user */
   message: string;
 }
 ```
@@ -455,21 +441,11 @@ A `POST` response with an HTTP `OK` JSON response should include a body payload
 of:
 
 ```ts filename="ActionPostResponse"
-/**
- * Response body payload returned from the Action POST Request
- */
-export interface ActionPostResponse<T extends ActionType = ActionType> {
+export interface ActionPostResponse {
   /** base64 encoded serialized transaction */
   transaction: string;
   /** describes the nature of the transaction */
   message?: string;
-  links?: {
-    /**
-     * The next action in a successive chain of actions to be obtained after
-     * the previous was successful.
-     */
-    next: NextActionLink;
-  };
 }
 ```
 
@@ -482,11 +458,6 @@ export interface ActionPostResponse<T extends ActionType = ActionType> {
   transaction included in the response. The client should display this value to
   the user. For example, this might be the name of an item being purchased, a
   discount applied to a purchase, or a thank you note.
-
-- `links.next` - An optional value use to "chain" multiple Actions together in
-  series. After the included `transaction` has been confirmed on-chain, the
-  client can fetch and render the next action. See
-  [Action Chaining](#action-chaining) for more details.
 
 - The client and application should allow additional fields in the request body
   and response body, which may be added by future specification updates.
@@ -526,91 +497,6 @@ must do so only if a signature for the `account` in the request is expected.
 
 If any signature except a signature for the `account` in the request is
 expected, the client must reject the transaction as **malicious**.
-
-#### Action Chaining
-
-Solana Actions can be "chained" together in a successive series. After an
-Action's transaction is confirmed on-chain, the next action can be obtained and
-presented to the user.
-
-Action chaining allows developers to build more complex and dynamic experiences
-within blinks, including:
-
-- providing multiple transactions (and eventually sign message) to a user
-- customized action metadata based on the user's wallet address
-- refreshing the blink metadata after a successful transaction
-- receive an API callback with the transaction signature for additional
-  validation and logic on the Action API server
-- customized "success" messages by updating the displayed metadata (e.g. a new
-  image and description)
-
-To chain multiple actions together, in any `ActionPostResponse` include a
-`links.next` of either:
-
-- `PostNextActionLink` - POST request link with a same origin callback url to
-  receive the `signature` and user's `account` in the body. This callback url
-  should respond with a `NextAction`.
-- `InlineNextActionLink` - Inline metadata for the next action to be presented
-  to the user immediately after the transaction has confirmed. No callback will
-  be made.
-
-```ts filename="NextActionLink"
-export type NextActionLink = PostNextActionLink | InlineNextActionLink;
-
-/** @see {NextActionPostRequest} */
-export interface PostNextActionLink {
-  /** Indicates the type of the link. */
-  type: "post";
-  /** Relative or same origin URL to which the POST request should be made. */
-  href: string;
-}
-
-/**
- * Represents an inline next action embedded within the current context.
- */
-export interface InlineNextActionLink {
-  /** Indicates the type of the link. */
-  type: "inline";
-  /** The next action to be performed */
-  action: NextAction;
-}
-```
-
-##### NextAction
-
-After the `ActionPostResponse` included `transaction` is signed by the user and
-confirmed on-chain, the blink client should either:
-
-- execute the callback request to fetch and display the `NextAction`, or
-- if a `NextAction` is already provided via `links.next`, the blink client
-  should update the displayed metadata and make no callback request
-
-If the callback url is not the same origin as the initial POST request, no
-callback request should be made. Blink clients should display an error notifying
-the user.
-
-```ts filename="NextAction"
-/** The next action to be performed */
-export type NextAction = Action<"action"> | CompletedAction;
-
-/** The completed action, used to declare the "completed" state within action chaining. */
-export type CompletedAction = Omit<Action<"completed">, "links">;
-```
-
-Based on the `type`, the next action should be presented to the user via blink
-clients in one of the following ways:
-
-- `action` - (default) A standard action that will allow the user to see the
-  included Action metadata, interact with the provided `LinkedActions`, and
-  continue to chain any following actions.
-
-- `completed` - The terminal state of an action chain that can update the blink
-  UI with the included Action metadata, but will not allow the user to execute
-  further actions.
-
-If no `links.next` is not provided, blink clients should assume the current
-action is final action in the chain, presenting their "completed" UI state after
-the transaction is confirmed.
 
 ### actions.json
 

@@ -42,9 +42,23 @@ export interface ActionRuleObject {
 export interface ActionGetRequest {}
 
 /**
- * Response body payload returned from the Action GET Request
+ * Type of action to determine client side handling
  */
-export interface ActionGetResponse {
+export type ActionType = "action" | "completed";
+
+/**
+ * Response body payload returned from the initial Action GET Request
+ */
+export interface ActionGetResponse extends Omit<Action, "type"> {
+  type?: "action";
+}
+
+/**
+ * A single Solana Action
+ */
+export interface Action<T extends ActionType = "action"> {
+  /** type of Action to present to the user */
+  type: T;
   /** image url that represents the source of the action request */
   icon: string;
   /** describes the source of the action request */
@@ -55,7 +69,6 @@ export interface ActionGetResponse {
   label: string;
   /** UI state for the button being rendered to the user */
   disabled?: boolean;
-  /**  */
   links?: {
     /** list of related Actions a user could perform */
     actions: LinkedAction[];
@@ -167,17 +180,77 @@ export interface ActionPostRequest<T = string> {
 /**
  * Response body payload returned from the Action POST Request
  */
-export interface ActionPostResponse {
+export interface ActionPostResponse<T extends ActionType = ActionType> {
   /** base64 encoded serialized transaction */
   transaction: string;
   /** describes the nature of the transaction */
   message?: string;
+  links?: {
+    /**
+     * The next action in a successive chain of actions to be obtained after
+     * the previous was successful.
+     */
+    next: NextActionLink;
+  };
+}
+
+/**
+ * Represents a link to the next action to be performed.
+ * The next action can be either a POST request to a callback URL or an inline action.
+ *
+ * @see {@link PostNextActionLink}
+ * @see {@link InlineNextActionLink}
+ */
+export type NextActionLink = PostNextActionLink | InlineNextActionLink;
+
+/**
+ * Represents a POST request link to the next action.
+ *
+ * This is a same origin callback URL used to fetch the next action in the chain.
+ * - This callback URL will receive a POST request with a body of `NextActionPostRequest`.
+ * - It should respond with a `NextAction`.
+ *
+ * @see {@link NextAction}
+ * @see {@link NextActionPostRequest}
+ */
+export interface PostNextActionLink {
+  /** Indicates the type of the link. */
+  type: "post";
+  /** Relative or same origin URL to which the POST request should be made. */
+  href: string;
+}
+
+/**
+ * Represents an inline next action embedded within the current context.
+ */
+export interface InlineNextActionLink {
+  /** Indicates the type of the link. */
+  type: "inline";
+  /** The next action to be performed */
+  action: NextAction;
+}
+
+/** The completed action, used to declare the "completed" state within action chaining. */
+export type CompletedAction = Omit<Action<"completed">, "links">;
+
+/** The next action to be performed */
+export type NextAction = Action<"action"> | CompletedAction;
+
+/**
+ * Response body payload sent via POST request to obtain the next action
+ * in a successive chain of actions
+ *
+ * @see {@link NextAction} should be returned as the POST response
+ */
+export interface NextActionPostRequest extends ActionPostRequest {
+  /** signature produced from the previous action (either a transaction id or message signature) */
+  signature: string;
 }
 
 /**
  * Error message that can be returned from an Actions API
  */
 export interface ActionError {
-  /** non-fatal error message to be displayed to the user */
+  /** simple error message to be displayed to the user */
   message: string;
 }
