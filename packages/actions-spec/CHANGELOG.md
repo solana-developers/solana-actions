@@ -1,5 +1,11 @@
 # @solana/actions-spec
 
+## 2.2.0
+
+### Minor Changes
+
+- v2.2 - action chainging
+
 ## 2.1.0
 
 ### Minor Changes
