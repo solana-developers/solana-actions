@@ -73,7 +73,7 @@ export function validateActionIdentifierMemo(
         memo = memo.match(/^\[\d+\] (.*)/)?.[1].trim() || memo;
       }
 
-      if (/^([\w\d]+:){2,}/g.test(memo) == false) {
+      if (/^([\w\d\-]+:){2,}/g.test(memo) == false) {
         throw new ActionIdentifierError("invalid memo formatting");
       }
 
