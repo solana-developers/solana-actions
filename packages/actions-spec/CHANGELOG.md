@@ -1,5 +1,11 @@
 # @solana/actions-spec
 
+## 2.2.1
+
+### Patch Changes
+
+- fix incorrect type
+
 ## 2.2.0
 
 ### Minor Changes
