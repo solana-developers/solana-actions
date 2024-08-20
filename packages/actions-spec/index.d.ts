@@ -49,9 +49,7 @@ export type ActionType = "action" | "completed";
 /**
  * Response body payload returned from the initial Action GET Request
  */
-export interface ActionGetResponse extends Omit<Action, "type"> {
-  type?: "action";
-}
+export type ActionGetResponse = Action<"action">;
 
 /**
  * A single Solana Action
