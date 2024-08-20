@@ -1,5 +1,11 @@
 # @solana/actions
 
+## 1.6.2
+
+### Patch Changes
+
+- @solana/actions - update spec version to v2.2 to support action chaining
+
 ## 1.6.1
 
 ### Patch Changes
