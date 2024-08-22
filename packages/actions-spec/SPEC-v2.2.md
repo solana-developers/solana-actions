@@ -53,7 +53,8 @@ interfaces and to facilitate user input to the Actions API.
 
 Each of the responses are crafted by an application (e.g. website, server
 backend, etc) and returned to the _Action client_. Ultimately, providing a
-signable transaction or message  for a wallet to prompt the user to approve, sign, and send to the blockchain.
+signable transaction or message for a wallet to prompt the user to approve,
+sign, and send to the blockchain.
 
 ### URL Scheme
 
@@ -242,11 +243,7 @@ export interface ActionError {
     client should not render a button for the contents of the root `label`.
 
 ```ts filename="LinkedAction"
-export type LinkedActionType = "tx" | "post"
-
 export interface LinkedAction {
-  /** Type of action to be performed by user */
-  type: LinkedActionType;
   /** URL endpoint for an action */
   href: string;
   /** button text rendered to the user */
@@ -259,11 +256,6 @@ export interface LinkedAction {
   parameters?: Array<TypedActionParameter>;
 }
 ```
-
-- ```type``` - the type of action that will be performed by the user
-  
-  -  `tx` - This tells blink client that the action endpoint will return a transaction type response.
-  - `post` - This tells blink client, that the action endpoint will not return a transaction object.
 
 The `ActionParameter` allows declaring what input the Action API is requesting
 from the user:
@@ -466,33 +458,20 @@ of:
 /**
  * Response body payload returned from the Action POST Request
  */
-
-/** This can be extended later */
-export type PostActionType = LinkedActionType;
-
-export interface TxResponse {
-  type: Extract<PostActionType, "tx">;
+export interface ActionPostResponse<T extends ActionType = ActionType> {
+  /** base64 encoded serialized transaction */
   transaction: string;
+  /** describes the nature of the transaction */
   message?: string;
   links?: {
+    /**
+     * The next action in a successive chain of actions to be obtained after
+     * the previous was successful.
+     */
     next: NextActionLink;
   };
 }
-
-export interface PostResponse {
-  type: Extract<PostActionType, "post">;
-  message?: string;
-  links?: {
-    next: NextActionLink;
-  };  
-}
-
-export type ActionPostResponse = TxResponse | PostResponse;
 ```
-
-- `type` - If this is of type
-  - `tx` then client will pop-up the user to sign the `transaction` and then after confirmation render `links.next`.
-  - `post` then client will skip the pop-up and render the `links.next`.
 
 - `transaction` - The value must be a base64-encoded
   [serialized transaction](https://solana-labs.github.io/solana-web3.js/classes/Transaction.html#serialize).
