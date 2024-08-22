@@ -76,9 +76,16 @@ export interface Action<T extends ActionType = "action"> {
 }
 
 /**
+ * Type of action to determine client side handling
+ */
+export type LinkedActionType = "tx" | "post";
+
+/**
  * Related action on a single endpoint
  */
 export interface LinkedAction {
+  /** Type of action to be performed by user */
+  type: LinkedActionType;
   /** URL endpoint for an action */
   href: string;
   /** button text rendered to the user */
@@ -175,22 +182,36 @@ export interface ActionPostRequest<T = string> {
   data?: Record<keyof T, string | Array<string>>;
 }
 
+/** Type of action to determine client side handling */
+export type PostActionType = LinkedActionType;
+
 /**
- * Response body payload returned from the Action POST Request
+ * Response body payload returned from the Action POST Request if the action is a transaction
  */
-export interface ActionPostResponse<T extends ActionType = ActionType> {
-  /** base64 encoded serialized transaction */
+export interface TxResponse {
+  type: Extract<PostActionType, "tx">;
   transaction: string;
-  /** describes the nature of the transaction */
   message?: string;
   links?: {
-    /**
-     * The next action in a successive chain of actions to be obtained after
-     * the previous was successful.
-     */
     next: NextActionLink;
   };
 }
+
+/**
+ * Response body payload returned from the Action POST Request if the action is a POST request
+ */
+export interface PostResponse {
+  type: Extract<PostActionType, "post">;
+  message?: string;
+  links?: {
+    next: NextActionLink;
+  };
+}
+
+/**
+ * Response body payload returned from the Action POST Request
+ */
+export type ActionPostResponse = TxResponse | PostResponse;
 
 /**
  * Represents a link to the next action to be performed.
