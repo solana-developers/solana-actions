@@ -33,6 +33,7 @@ export const GET = async (req: Request) => {
     ).toString();
 
     const payload: ActionGetResponse = {
+      type: "action",
       title: "Actions Example - Transfer Native SOL",
       icon: new URL("/solana_devs.jpg", requestUrl.origin).toString(),
       description: "Transfer SOL to another Solana wallet",

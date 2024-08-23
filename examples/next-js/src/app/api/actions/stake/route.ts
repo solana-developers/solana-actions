@@ -35,6 +35,7 @@ export const GET = async (req: Request) => {
     ).toString();
 
     const payload: ActionGetResponse = {
+      type: "action",
       title: "Actions Example - Staking SOL",
       icon: new URL("/solana_devs.jpg", requestUrl.origin).toString(),
       description: `Stake your SOL to the ${validator.toBase58()} validator to secure the Solana network`,

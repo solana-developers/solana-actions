@@ -24,6 +24,7 @@ const headers = createActionHeaders();
 
 export const GET = async (req: Request) => {
   const payload: ActionGetResponse = {
+    type: "action",
     title: "Actions Example - Simple On-chain Memo",
     icon: new URL("/solana_devs.jpg", new URL(req.url).origin).toString(),
     description: "Send a message on-chain using a Memo",
