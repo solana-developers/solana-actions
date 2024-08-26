@@ -132,8 +132,6 @@ export const POST = async (req: Request) => {
      */
     const payload: CompletedAction = {
       type: "completed",
-      // setting disabled=true w
-      // disabled: true,
       title: "Chaining was successful!",
       icon: new URL("/solana_devs.jpg", new URL(req.url).origin).toString(),
       label: "Complete!",
