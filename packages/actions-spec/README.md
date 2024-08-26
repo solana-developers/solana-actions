@@ -196,7 +196,6 @@ export interface Action<T extends ActionType = "action"> {
   - `action` - Standard action that will allow the user to interact with any of
     the `LinkedActions`
   - `completed` - Used to declare the "completed" state within action chaining.
-    After the
 
 - `icon` - The value must be an absolute HTTP or HTTPS URL of an icon image. The
   file must be an SVG, PNG, or WebP image, or the client/wallet must reject it
