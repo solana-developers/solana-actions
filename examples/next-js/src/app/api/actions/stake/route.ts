@@ -8,6 +8,7 @@ import {
   ActionGetResponse,
   ActionPostRequest,
   createActionHeaders,
+  ActionError,
 } from "@solana/actions";
 import {
   Authorized,
@@ -74,9 +75,9 @@ export const GET = async (req: Request) => {
     });
   } catch (err) {
     console.log(err);
-    let message = "An unknown error occurred";
-    if (typeof err == "string") message = err;
-    return new Response(message, {
+    let actionError: ActionError = { message: "An unknown error occurred" };
+    if (typeof err == "string") actionError.message = err;
+    return Response.json(actionError, {
       status: 400,
       headers,
     });
@@ -85,9 +86,7 @@ export const GET = async (req: Request) => {
 
 // DO NOT FORGET TO INCLUDE THE `OPTIONS` HTTP METHOD
 // THIS WILL ENSURE CORS WORKS FOR BLINKS
-export const OPTIONS = async () => {
-  return new Response(null, { headers });
-};
+export const OPTIONS = async () => Response.json(null, { headers });
 
 export const POST = async (req: Request) => {
   try {
@@ -101,10 +100,7 @@ export const POST = async (req: Request) => {
     try {
       account = new PublicKey(body.account);
     } catch (err) {
-      return new Response('Invalid "account" provided', {
-        status: 400,
-        headers,
-      });
+      throw 'Invalid "account" provided';
     }
 
     const connection = new Connection(
@@ -156,9 +152,9 @@ export const POST = async (req: Request) => {
     });
   } catch (err) {
     console.log(err);
-    let message = "An unknown error occurred";
-    if (typeof err == "string") message = err;
-    return new Response(message, {
+    let actionError: ActionError = { message: "An unknown error occurred" };
+    if (typeof err == "string") actionError.message = err;
+    return Response.json(actionError, {
       status: 400,
       headers,
     });

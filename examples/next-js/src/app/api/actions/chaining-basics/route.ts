@@ -25,11 +25,32 @@ const headers = createActionHeaders();
 
 export const GET = async (req: Request) => {
   const payload: ActionGetResponse = {
-    type: "action",
-    title: "Actions Example - Simple On-chain Memo",
+    title: "Simple Action Chaining Example",
     icon: new URL("/solana_devs.jpg", new URL(req.url).origin).toString(),
-    description: "Send a message on-chain using a Memo",
+    description: "Perform a simple action chain",
     label: "Send Memo",
+    links: {
+      actions: [
+        {
+          href: "/api/actions/chaining-basics",
+          label: "Send Memo",
+          parameters: [
+            {
+              patternDescription: "Short message here",
+              name: "memo",
+              label: "Send a message on-chain using a Memo",
+              type: "textarea",
+            },
+            // {
+            //   patternDescription: "Short message here",
+            //   name: "email",
+            //   label: "Send a message on-chain using a Memo",
+            //   type: "text",
+            // },
+          ],
+        },
+      ],
+    },
   };
 
   return Response.json(payload, {
@@ -43,13 +64,31 @@ export const OPTIONS = async () => Response.json(null, { headers });
 
 export const POST = async (req: Request) => {
   try {
-    const body: ActionPostRequest = await req.json();
+    /**
+     * we can type the `body.data` to what fields we expect from the GET response above
+     */
+    const body: ActionPostRequest<{ memo: string }> & {
+      params: ActionPostRequest<{ memo: string }>["data"];
+    } = await req.json();
+
+    // body will contain the user's `account` and `memo` input from the user
+    console.log("body:", body);
 
     let account: PublicKey;
     try {
       account = new PublicKey(body.account);
     } catch (err) {
       throw 'Invalid "account" provided';
+    }
+
+    // read in the user input `memo` value
+    const memoMessage = (body.params?.memo || body.data?.memo) as
+      | string
+      | undefined;
+
+    // todo: for simplicity, we are not doing any much validation on this user input
+    if (!memoMessage) {
+      throw 'Invalid "memo" provided';
     }
 
     const connection = new Connection(
@@ -63,7 +102,7 @@ export const POST = async (req: Request) => {
       }),
       new TransactionInstruction({
         programId: new PublicKey(MEMO_PROGRAM_ID),
-        data: Buffer.from("this is a simple memo message2", "utf8"),
+        data: Buffer.from(memoMessage, "utf8"),
         keys: [],
       }),
     );
@@ -79,6 +118,18 @@ export const POST = async (req: Request) => {
       fields: {
         transaction,
         message: "Post this memo on-chain",
+        links: {
+          /**
+           * this `href` will receive a POST request (callback)
+           * with the confirmed `signature`
+           *
+           * you could also use query params to track whatever step you are on
+           */
+          next: {
+            type: "post",
+            href: "/api/actions/chaining-basics/next-action",
+          },
+        },
       },
       // no additional signers are required for this transaction
       // signers: [],
