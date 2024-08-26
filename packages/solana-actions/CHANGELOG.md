@@ -1,5 +1,11 @@
 # @solana/actions
 
+## 1.6.3
+
+### Patch Changes
+
+- update @solana/actions-spec for bug fix
+
 ## 1.6.2
 
 ### Patch Changes
