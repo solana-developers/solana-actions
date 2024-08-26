@@ -1,27 +1,14 @@
 /**
- * Solana Actions Example
+ * Solana Action chaining example
  */
 
 import {
-  ActionPostResponse,
-  createPostResponse,
-  MEMO_PROGRAM_ID,
-  ActionGetResponse,
-  ActionPostRequest,
   createActionHeaders,
   NextActionPostRequest,
   ActionError,
-  Action,
   CompletedAction,
 } from "@solana/actions";
-import {
-  clusterApiUrl,
-  ComputeBudgetProgram,
-  Connection,
-  PublicKey,
-  Transaction,
-  TransactionInstruction,
-} from "@solana/web3.js";
+import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
 
 // create the standard headers for this route (including CORS)
 const headers = createActionHeaders();

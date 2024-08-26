@@ -1,5 +1,5 @@
 /**
- * Solana Actions Example
+ * Solana Action chaining example
  */
 
 import {
@@ -41,12 +41,6 @@ export const GET = async (req: Request) => {
               label: "Send a message on-chain using a Memo",
               type: "textarea",
             },
-            // {
-            //   patternDescription: "Short message here",
-            //   name: "email",
-            //   label: "Send a message on-chain using a Memo",
-            //   type: "text",
-            // },
           ],
         },
       ],
@@ -66,6 +60,12 @@ export const POST = async (req: Request) => {
   try {
     /**
      * we can type the `body.data` to what fields we expect from the GET response above
+     *
+     * NOTE: there is currently a bug in the blinks sdk that will
+     * result in the body data being passed in `body.data` OR `body.params`
+     * (it should always be `body.data`). so we are handling that scenario here
+     *
+     * todo: remove this workaround when that bug is fixed and rolled out to wallets
      */
     const body: ActionPostRequest<{ memo: string }> & {
       params: ActionPostRequest<{ memo: string }>["data"];
@@ -82,6 +82,7 @@ export const POST = async (req: Request) => {
     }
 
     // read in the user input `memo` value
+    // todo: see note above on `body`
     const memoMessage = (body.params?.memo || body.data?.memo) as
       | string
       | undefined;
