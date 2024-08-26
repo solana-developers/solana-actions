@@ -244,7 +244,8 @@ export type NextAction = Action<"action"> | CompletedAction;
  *
  * @see {@link NextAction} should be returned as the POST response
  */
-export interface NextActionPostRequest extends ActionPostRequest {
+export interface NextActionPostRequest<T = string>
+  extends ActionPostRequest<T> {
   /** signature produced from the previous action (either a transaction id or message signature) */
   signature: string;
 }
