@@ -78,7 +78,7 @@ export interface Action<T extends ActionType = "action"> {
 /**
  * Type of action to determine client side handling
  */
-export type LinkedActionType = "tx" | "post";
+export type LinkedActionType = "transaction" | "post";
 
 /**
  * Related action on a single endpoint
