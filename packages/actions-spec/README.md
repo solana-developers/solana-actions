@@ -242,7 +242,7 @@ export interface ActionError {
     client should not render a button for the contents of the root `label`.
 
 ```ts filename="LinkedAction"
-export type LinkedActionType = "tx" | "post"
+export type LinkedActionType = "transaction" | "post"
 
 export interface LinkedAction {
   /** Type of action to be performed by user */
@@ -459,39 +459,49 @@ The Action's `POST` endpoint should respond with an HTTP `OK` JSON response
 
 #### POST Response Body
 
-A `POST` response with an HTTP `OK` JSON response should include a body payload
-of:
+A `POST` response with an HTTP `OK` JSON response should include a body payload of:
 
 ```ts filename="ActionPostResponse"
 /**
  * Response body payload returned from the Action POST Request
  */
 
-/** This can be extended later */
 export type PostActionType = LinkedActionType;
 
-export interface TxResponse {
-  type: Extract<PostActionType, "tx">;
-  transaction: string;
+/**
+ * Generic response from an Action API request
+ */
+export interface ActionResponse {
+  type?: PostActionType;
   message?: string;
   links?: {
     next: NextActionLink;
   };
 }
 
-export interface PostResponse {
-  type: Extract<PostActionType, "post">;
-  message?: string;
-  links?: {
-    next: NextActionLink;
-  };  
+/**
+ * Response body payload returned from the Action POST Request if the action is a transaction
+ */
+export interface TransactionResponse extends ActionResponse {
+  type?: Extract<PostActionType, "transaction">;
+  transaction: string;
 }
 
-export type ActionPostResponse = TxResponse | PostResponse;
+/**
+ * Response body payload returned from the Action POST Request if the action is a POST request
+ */
+export interface PostResponse extends ActionResponse {
+  type: Extract<PostActionType, "post">;
+}
+
+/**
+ * Response body payload returned from the Action POST Request
+ */
+export type ActionPostResponse = TransactionResponse | PostResponse;
 ```
 
 - `type` - If this is of type
-  - `tx` then client will pop-up the user to sign the `transaction` and then after confirmation render `links.next`.
+  - `transaction` then client will pop-up the user to sign the `transaction` and then after confirmation render `links.next`.
   - `post` then client will skip the pop-up and render the `links.next`.
 
 - `transaction` - The value must be a base64-encoded

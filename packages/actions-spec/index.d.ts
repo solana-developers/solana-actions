@@ -184,34 +184,33 @@ export interface ActionPostRequest<T = string> {
 
 /** Type of action to determine client side handling */
 export type PostActionType = LinkedActionType;
-
+/**
+ * Generic response from an Action API request
+ */
+export interface ActionResponse {
+  type?: PostActionType;
+  message?: string;
+  links?: {
+    next: NextActionLink;
+  };
+}
 /**
  * Response body payload returned from the Action POST Request if the action is a transaction
  */
-export interface TxResponse {
-  type: Extract<PostActionType, "tx">;
+export interface TransactionResponse extends ActionResponse {
+  type?: Extract<PostActionType, "transaction">;
   transaction: string;
-  message?: string;
-  links?: {
-    next: NextActionLink;
-  };
 }
-
 /**
  * Response body payload returned from the Action POST Request if the action is a POST request
  */
-export interface PostResponse {
+export interface PostResponse extends ActionResponse {
   type: Extract<PostActionType, "post">;
-  message?: string;
-  links?: {
-    next: NextActionLink;
-  };
 }
-
 /**
  * Response body payload returned from the Action POST Request
  */
-export type ActionPostResponse = TxResponse | PostResponse;
+export type ActionPostResponse = TransactionResponse | PostResponse;
 
 /**
  * Represents a link to the next action to be performed.
