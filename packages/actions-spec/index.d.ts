@@ -263,7 +263,7 @@ export type NextAction = Action<"action"> | CompletedAction;
  */
 export interface NextActionPostRequest extends ActionPostRequest {
   /** signature produced from the previous action (either a transaction id or message signature) */
-  signature: string;
+  signature?: string;
 }
 
 /**
