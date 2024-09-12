@@ -242,7 +242,7 @@ export interface ActionError {
     client should not render a button for the contents of the root `label`.
 
 ```ts filename="LinkedAction"
-export type LinkedActionType = "transaction" | "post"
+export type LinkedActionType = "transaction" | "post" | "external-link"
 
 export interface LinkedAction {
   /** Type of action to be performed by user */
@@ -495,9 +495,17 @@ export interface PostResponse extends ActionResponse {
 }
 
 /**
+ * Response body payload returned from the Action POST Request if the action is an External Link
+ */
+export interface ExternalLinkResponse extends ActionResponse {
+  type: Extract<PostActionType, "external-link">;
+  externalLink : string;
+}
+
+/**
  * Response body payload returned from the Action POST Request
  */
-export type ActionPostResponse = TransactionResponse | PostResponse;
+export type ActionPostResponse = TransactionResponse | PostResponse | ExternalLinkResponse;
 ```
 
 - `type` - If this is of type

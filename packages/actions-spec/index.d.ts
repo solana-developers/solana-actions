@@ -78,7 +78,7 @@ export interface Action<T extends ActionType = "action"> {
 /**
  * Type of action to determine client side handling
  */
-export type LinkedActionType = "transaction" | "post";
+export type LinkedActionType = "transaction" | "post" | "external-link";
 
 /**
  * Related action on a single endpoint
@@ -198,7 +198,7 @@ export interface ActionResponse {
  * Response body payload returned from the Action POST Request if the action is a transaction
  */
 export interface TransactionResponse extends ActionResponse {
-  type?: Extract<PostActionType, "transaction">;
+  type: Extract<PostActionType, "transaction">;
   transaction: string;
 }
 /**
@@ -207,10 +207,19 @@ export interface TransactionResponse extends ActionResponse {
 export interface PostResponse extends ActionResponse {
   type: Extract<PostActionType, "post">;
 }
+
+/**
+ * Response body payload returned from the Action POST Request if the action is an External Link
+ */
+export interface ExternalLinkResponse extends ActionResponse {
+  type: Extract<PostActionType, "external-link">;
+  externalLink : string;
+}
+
 /**
  * Response body payload returned from the Action POST Request
  */
-export type ActionPostResponse = TransactionResponse | PostResponse;
+export type ActionPostResponse = TransactionResponse | PostResponse | ExternalLinkResponse;
 
 /**
  * Represents a link to the next action to be performed.
