@@ -154,6 +154,10 @@ appropriate HTTP error.
   response headers.
 - The client should display the `title` and render the `icon` image to user.
 
+Error responses (i.e. HTTP 4xx and 5xx status codes) should return a JSON
+response body following `ActionError` to present a helpful error message to
+users. See [Action Errors](#action-errors).
+
 #### GET Response Body
 
 A `GET` response with an HTTP `OK` JSON response should include a body payload
@@ -204,16 +208,10 @@ export interface ActionGetResponse {
 
 - `error` - An optional error indication for non-fatal errors. If present, the
   client should display it to the user. If set, it should not prevent the client
-  from interpreting the action or displaying it to the user. For example, the
-  error can be used together with `disabled` to display a reason like business
-  constraints, authorization, the state, or an error of external resource.
-
-```ts filename="ActionError"
-export interface ActionError {
-  /** non-fatal error message to be displayed to the user */
-  message: string;
-}
-```
+  from interpreting the action or displaying it to the user (see
+  [Action Errors](#action-errors)). For example, the error can be used together
+  with `disabled` to display a reason like business constraints, authorization,
+  the state, or an error of external resource.
 
 - `links.actions` - An optional array of related actions for the endpoint. Users
   should be displayed UI for each of the listed actions and expected to only
@@ -435,6 +433,10 @@ The Action's `POST` endpoint should respond with an HTTP `OK` JSON response
   [`Content-Type` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)
   of `application/json`.
 
+Error responses (i.e. HTTP 4xx and 5xx status codes) should return a JSON
+response body following `ActionError` to present a helpful error message to
+users. See [Action Errors](#action-errors).
+
 #### POST Response Body
 
 A `POST` response with an HTTP `OK` JSON response should include a body payload
@@ -497,6 +499,27 @@ must do so only if a signature for the `account` in the request is expected.
 
 If any signature except a signature for the `account` in the request is
 expected, the client must reject the transaction as **malicious**.
+
+### Action Errors
+
+Actions APIs should return errors using `ActionError` in order to present
+helpful error messages to the user. Depending on the context, this error could
+be fatal or non-fatal.
+
+```ts filename="ActionError"
+export interface ActionError {
+  /** simple error message to be displayed to the user */
+  message: string;
+}
+```
+
+When an Actions API responds with an HTTP error status code (i.e. 4xx and 5xx),
+the response body should be a JSON payload following `ActionError`. The error is
+considered fatal and the included `message` should be presented to the user.
+
+For API responses that support the optional `error` attribute (like
+[`ActionGetResponse`](#get-response)), the error is considered non-fatal and the
+included `message` should be presented to the user.
 
 ### actions.json
 

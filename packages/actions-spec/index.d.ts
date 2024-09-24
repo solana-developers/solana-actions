@@ -48,8 +48,12 @@ export type ActionType = "action" | "completed";
 
 /**
  * Response body payload returned from the initial Action GET Request
+ *
+ * note: `type` is optional for backwards compatibility
  */
-export type ActionGetResponse = Action<"action">;
+export interface ActionGetResponse extends Omit<Action, "type"> {
+  type?: "action";
+}
 
 /**
  * A single Solana Action
@@ -273,6 +277,7 @@ export type NextAction = Action<"action"> | CompletedAction;
  *
  * @see {@link NextAction} should be returned as the POST response
  */
+
 export interface NextActionPostRequest extends Omit<ActionPostRequest, "type"> { 
   /** signature produced from the previous action (either a transaction id or message signature) */
   signature?: string;

@@ -49,6 +49,7 @@ async function getTransferSol(req, res) {
     const baseHref = `${BASE_URL}/api/actions/transfer-sol?to=${toPubkey.toBase58()}`;
 
     const payload = {
+      type: "action",
       title: "Actions Example - Transfer Native SOL",
       icon: "https://solana-actions.vercel.app/solana_devs.jpg",
       description: "Transfer SOL to another Solana wallet",

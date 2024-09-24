@@ -1,5 +1,11 @@
 # @solana/actions-spec
 
+## 2.2.2
+
+### Patch Changes
+
+- fix optional `type` on `ActionGetResponse`
+
 ## 2.2.1
 
 ### Patch Changes

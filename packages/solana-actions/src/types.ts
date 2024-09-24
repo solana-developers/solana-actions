@@ -14,6 +14,16 @@ export type {
   SupportedProtocols,
   SOLANA_PAY_PROTOCOL,
   SOLANA_ACTIONS_PROTOCOL,
+  NextActionPostRequest,
+  Action,
+  ActionParameterType,
+  ActionParameterSelectable,
+  ActionType,
+  CompletedAction,
+  NextAction,
+  NextActionLink,
+  PostNextActionLink,
+  InlineNextActionLink,
 } from "@solana/actions-spec";
 
 /** `reference` in the [Solana Pay spec](https://github.com/solana-labs/solana-pay/blob/master/SPEC.md#reference). */

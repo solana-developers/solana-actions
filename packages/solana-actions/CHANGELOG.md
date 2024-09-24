@@ -1,5 +1,17 @@
 # @solana/actions
 
+## 1.6.4
+
+### Patch Changes
+
+- fix: reexport missing spec types
+
+## 1.6.3
+
+### Patch Changes
+
+- update @solana/actions-spec for bug fix
+
 ## 1.6.2
 
 ### Patch Changes
