@@ -471,7 +471,7 @@ export type PostActionType = LinkedActionType;
 /**
  * Generic response from an Action API request
  */
-export interface ActionResponse {
+export interface ActionResponse { 
   type?: PostActionType;
   message?: string;
   links?: {

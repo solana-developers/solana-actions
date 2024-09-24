@@ -172,6 +172,7 @@ export interface ActionParameterSelectable<T extends ActionParameterType>
  * Response body payload sent via the Action POST Request
  */
 export interface ActionPostRequest<T = string> {
+  type?: PostActionType;
   /** base58-encoded public key of an account that may sign the transaction */
   account: string;
   /**
@@ -213,13 +214,16 @@ export interface PostResponse extends ActionResponse {
  */
 export interface ExternalLinkResponse extends ActionResponse {
   type: Extract<PostActionType, "external-link">;
-  externalLink : string;
+  externalLink: string;
 }
 
 /**
  * Response body payload returned from the Action POST Request
  */
-export type ActionPostResponse = TransactionResponse | PostResponse | ExternalLinkResponse;
+export type ActionPostResponse =
+  | TransactionResponse
+  | PostResponse
+  | ExternalLinkResponse;
 
 /**
  * Represents a link to the next action to be performed.
@@ -269,7 +273,7 @@ export type NextAction = Action<"action"> | CompletedAction;
  *
  * @see {@link NextAction} should be returned as the POST response
  */
-export interface NextActionPostRequest extends ActionPostRequest {
+export interface NextActionPostRequest extends Omit<ActionPostRequest, "type"> { 
   /** signature produced from the previous action (either a transaction id or message signature) */
   signature?: string;
 }
