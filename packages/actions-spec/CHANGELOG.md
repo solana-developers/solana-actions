@@ -1,5 +1,11 @@
 # @solana/actions-spec
 
+## 2.3.0
+
+### Minor Changes
+
+- optional transaction and external links
+
 ## 2.2.2
 
 ### Patch Changes
