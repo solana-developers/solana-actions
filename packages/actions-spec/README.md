@@ -53,7 +53,8 @@ interfaces and to facilitate user input to the Actions API.
 
 Each of the responses are crafted by an application (e.g. website, server
 backend, etc) and returned to the _Action client_. Ultimately, providing a
-signable transaction or message  for a wallet to prompt the user to approve, sign, and send to the blockchain.
+signable transaction or message for a wallet to prompt the user to approve,
+sign, and send to the blockchain.
 
 ### URL Scheme
 
@@ -239,7 +240,7 @@ export interface Action<T extends ActionType = "action"> {
     client should not render a button for the contents of the root `label`.
 
 ```ts filename="LinkedAction"
-export type LinkedActionType = "transaction" | "post" | "external-link"
+export type LinkedActionType = "transaction" | "post" | "external-link";
 
 export interface LinkedAction {
   /** Type of action to be performed by user */
@@ -257,10 +258,14 @@ export interface LinkedAction {
 }
 ```
 
-- ```type``` - the type of action that will be performed by the user
-  
-  -  `tx` - This tells blink client that the action endpoint will return a transaction type response.
-  - `post` - This tells blink client, that the action endpoint will not return a transaction object.
+- `type` - the type of action that will be performed by the user
+
+  - `transaction` - This tells blink client that the action endpoint will return
+    a transaction type response.
+  - `post` - This tells blink client, that the action endpoint will not return a
+    transaction object.
+  - `external-link` - This tells blink client, that the action endpoint will
+    return an external link to allow the user to click and navigate to.
 
 The `ActionParameter` allows declaring what input the Action API is requesting
 from the user:
@@ -460,7 +465,8 @@ users. See [Action Errors](#action-errors).
 
 #### POST Response Body
 
-A `POST` response with an HTTP `OK` JSON response should include a body payload of:
+A `POST` response with an HTTP `OK` JSON response should include a body payload
+of:
 
 ```ts filename="ActionPostResponse"
 /**
@@ -472,7 +478,7 @@ export type PostActionType = LinkedActionType;
 /**
  * Generic response from an Action API request
  */
-export interface ActionResponse { 
+export interface ActionResponse {
   type?: PostActionType;
   message?: string;
   links?: {
@@ -500,17 +506,22 @@ export interface PostResponse extends ActionResponse {
  */
 export interface ExternalLinkResponse extends ActionResponse {
   type: Extract<PostActionType, "external-link">;
-  externalLink : string;
+  externalLink: string;
 }
 
 /**
  * Response body payload returned from the Action POST Request
  */
-export type ActionPostResponse = TransactionResponse | PostResponse | ExternalLinkResponse;
+export type ActionPostResponse =
+  | TransactionResponse
+  | PostResponse
+  | ExternalLinkResponse;
 ```
 
 - `type` - If this is of type
-  - `transaction` then client will pop-up the user to sign the `transaction` and then after confirmation render `links.next`.
+
+  - `transaction` then client will pop-up the user to sign the `transaction` and
+    then after confirmation render `links.next`.
   - `post` then client will skip the pop-up and render the `links.next`.
 
 - `transaction` - The value must be a base64-encoded
