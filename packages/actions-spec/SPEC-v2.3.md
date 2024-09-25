@@ -240,11 +240,7 @@ export interface Action<T extends ActionType = "action"> {
     client should not render a button for the contents of the root `label`.
 
 ```ts filename="LinkedAction"
-export type LinkedActionType =
-  | "transaction"
-  | "message"
-  | "post"
-  | "external-link";
+export type LinkedActionType = "transaction" | "post" | "external-link";
 
 export interface LinkedAction {
   /** Type of action to be performed by user */
@@ -266,8 +262,6 @@ export interface LinkedAction {
 
   - `transaction` - This tells blink client that the action endpoint will return
     a transaction type response.
-  - `message` - This tells blink client that the action endpoint will return a
-    sign message type response.
   - `post` - This tells blink client, that the action endpoint will not return a
     transaction object.
   - `external-link` - This tells blink client, that the action endpoint will
@@ -515,27 +509,11 @@ export interface ExternalLinkResponse extends ActionResponse {
   externalLink: string;
 }
 
-export interface SignMessageResponse extends ActionResponse {
-  type: Extract<PostActionType, "message">;
-  /** data for the user to sign */
-  data: string | SignMessageData;
-  /**
-   * normally a [Message Authentication Code](https://en.wikipedia.org/wiki/Message_authentication_code) (MAC)
-   * or JWT created using a secret stored on the Action API server (allowing the server to verify this value)
-   */
-  state?: string;
-  /** `links.next` is required for sign message to validate the signature created */
-  links: {
-    next: PostNextActionLink;
-  };
-}
-
 /**
  * Response body payload returned from the Action POST Request
  */
 export type ActionPostResponse =
   | TransactionResponse
-  | SignMessageResponse
   | PostResponse
   | ExternalLinkResponse;
 ```
@@ -626,10 +604,6 @@ To chain multiple actions together, in any `ActionPostResponse` include a
 - `InlineNextActionLink` - Inline metadata for the next action to be presented
   to the user immediately after the transaction has confirmed. No callback will
   be made.
-
-Note: Message signing requires the use of action chaining and is required to
-return a NextAction of `PostNextActionLink` in order to deliver the generated
-signature back to the action API.
 
 ```ts filename="NextActionLink"
 export type NextActionLink = PostNextActionLink | InlineNextActionLink;

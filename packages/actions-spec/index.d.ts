@@ -229,14 +229,6 @@ export interface ExternalLinkResponse extends ActionResponse {
 }
 
 /**
- * Response body payload returned from the Action POST Request if the action is an External Link
- */
-export interface ExternalLinkResponse extends ActionResponse {
-  type: Extract<PostActionType, "external-link">;
-  externalLink: string;
-}
-
-/**
  * Represents a link to the next action to be performed.
  * The next action can be either a POST request to a callback URL or an inline action.
  *
