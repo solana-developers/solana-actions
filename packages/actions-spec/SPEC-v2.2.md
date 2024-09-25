@@ -53,7 +53,8 @@ interfaces and to facilitate user input to the Actions API.
 
 Each of the responses are crafted by an application (e.g. website, server
 backend, etc) and returned to the _Action client_. Ultimately, providing a
-signable transaction or message  for a wallet to prompt the user to approve, sign, and send to the blockchain.
+signable transaction or message for a wallet to prompt the user to approve,
+sign, and send to the blockchain.
 
 ### URL Scheme
 
@@ -153,10 +154,6 @@ appropriate HTTP error.
   response headers.
 - The client should display the `title` and render the `icon` image to user.
 
-Error responses (i.e. HTTP 4xx and 5xx status codes) should return a JSON
-response body following `ActionError` to present a helpful error message to
-users. See [Action Errors](#action-errors).
-
 #### GET Response Body
 
 A `GET` response with an HTTP `OK` JSON response should include a body payload
@@ -195,6 +192,7 @@ export interface Action<T extends ActionType = "action"> {
   - `action` - Standard action that will allow the user to interact with any of
     the `LinkedActions`
   - `completed` - Used to declare the "completed" state within action chaining.
+    After the
 
 - `icon` - The value must be an absolute HTTP or HTTPS URL of an icon image. The
   file must be an SVG, PNG, or WebP image, or the client/wallet must reject it
@@ -220,10 +218,16 @@ export interface Action<T extends ActionType = "action"> {
 
 - `error` - An optional error indication for non-fatal errors. If present, the
   client should display it to the user. If set, it should not prevent the client
-  from interpreting the action or displaying it to the user (see
-  [Action Errors](#action-errors)). For example, the error can be used together
-  with `disabled` to display a reason like business constraints, authorization,
-  the state, or an error of external resource.
+  from interpreting the action or displaying it to the user. For example, the
+  error can be used together with `disabled` to display a reason like business
+  constraints, authorization, the state, or an error of external resource.
+
+```ts filename="ActionError"
+export interface ActionError {
+  /** simple error message to be displayed to the user */
+  message: string;
+}
+```
 
 - `links.actions` - An optional array of related actions for the endpoint. Users
   should be displayed UI for each of the listed actions and expected to only
@@ -239,11 +243,7 @@ export interface Action<T extends ActionType = "action"> {
     client should not render a button for the contents of the root `label`.
 
 ```ts filename="LinkedAction"
-export type LinkedActionType = "transaction" | "post" | "external-link"
-
 export interface LinkedAction {
-  /** Type of action to be performed by user */
-  type: LinkedActionType;
   /** URL endpoint for an action */
   href: string;
   /** button text rendered to the user */
@@ -256,11 +256,6 @@ export interface LinkedAction {
   parameters?: Array<TypedActionParameter>;
 }
 ```
-
-- ```type``` - the type of action that will be performed by the user
-  
-  -  `tx` - This tells blink client that the action endpoint will return a transaction type response.
-  - `post` - This tells blink client, that the action endpoint will not return a transaction object.
 
 The `ActionParameter` allows declaring what input the Action API is requesting
 from the user:
@@ -454,64 +449,29 @@ The Action's `POST` endpoint should respond with an HTTP `OK` JSON response
   [`Content-Type` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)
   of `application/json`.
 
-Error responses (i.e. HTTP 4xx and 5xx status codes) should return a JSON
-response body following `ActionError` to present a helpful error message to
-users. See [Action Errors](#action-errors).
-
 #### POST Response Body
 
-A `POST` response with an HTTP `OK` JSON response should include a body payload of:
+A `POST` response with an HTTP `OK` JSON response should include a body payload
+of:
 
 ```ts filename="ActionPostResponse"
 /**
  * Response body payload returned from the Action POST Request
  */
-
-export type PostActionType = LinkedActionType;
-
-/**
- * Generic response from an Action API request
- */
-export interface ActionResponse { 
-  type?: PostActionType;
+export interface ActionPostResponse<T extends ActionType = ActionType> {
+  /** base64 encoded serialized transaction */
+  transaction: string;
+  /** describes the nature of the transaction */
   message?: string;
   links?: {
+    /**
+     * The next action in a successive chain of actions to be obtained after
+     * the previous was successful.
+     */
     next: NextActionLink;
   };
 }
-
-/**
- * Response body payload returned from the Action POST Request if the action is a transaction
- */
-export interface TransactionResponse extends ActionResponse {
-  type?: Extract<PostActionType, "transaction">;
-  transaction: string;
-}
-
-/**
- * Response body payload returned from the Action POST Request if the action is a POST request
- */
-export interface PostResponse extends ActionResponse {
-  type: Extract<PostActionType, "post">;
-}
-
-/**
- * Response body payload returned from the Action POST Request if the action is an External Link
- */
-export interface ExternalLinkResponse extends ActionResponse {
-  type: Extract<PostActionType, "external-link">;
-  externalLink : string;
-}
-
-/**
- * Response body payload returned from the Action POST Request
- */
-export type ActionPostResponse = TransactionResponse | PostResponse | ExternalLinkResponse;
 ```
-
-- `type` - If this is of type
-  - `transaction` then client will pop-up the user to sign the `transaction` and then after confirmation render `links.next`.
-  - `post` then client will skip the pop-up and render the `links.next`.
 
 - `transaction` - The value must be a base64-encoded
   [serialized transaction](https://solana-labs.github.io/solana-web3.js/classes/Transaction.html#serialize).
@@ -651,27 +611,6 @@ clients in one of the following ways:
 If no `links.next` is not provided, blink clients should assume the current
 action is final action in the chain, presenting their "completed" UI state after
 the transaction is confirmed.
-
-### Action Errors
-
-Actions APIs should return errors using `ActionError` in order to present
-helpful error messages to the user. Depending on the context, this error could
-be fatal or non-fatal.
-
-```ts filename="ActionError"
-export interface ActionError {
-  /** simple error message to be displayed to the user */
-  message: string;
-}
-```
-
-When an Actions API responds with an HTTP error status code (i.e. 4xx and 5xx),
-the response body should be a JSON payload following `ActionError`. The error is
-considered fatal and the included `message` should be presented to the user.
-
-For API responses that support the optional `error` attribute (like
-[`ActionGetResponse`](#get-response)), the error is considered non-fatal and the
-included `message` should be presented to the user.
 
 ### actions.json
 
