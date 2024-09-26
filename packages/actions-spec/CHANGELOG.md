@@ -1,5 +1,11 @@
 # @solana/actions-spec
 
+## 2.4.0
+
+### Minor Changes
+
+- sign message
+
 ## 2.3.0
 
 ### Minor Changes
