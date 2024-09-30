@@ -748,6 +748,57 @@ export type SignMessageData = {
 When received by the blink client, the user should be shown the plaintext `data`
 value and prompted to sign it with their wallet to generate a `signature`.
 
+When using `SignMessageData`, it must be formatted as standardized, human-readable plaintext suitable for signing. 
+Both the client and server must generate the message using the same method to ensure proper verification.
+The following template must be used by both the Action API and the client to format `SignMessageData`:
+
+```
+${domain} wants you to sign message with your account:
+${address}
+
+${statement}
+
+Chain ID: ${chainId}
+Nonce: ${nonce}
+Issued At: ${issuedAt}
+```
+
+If `chainId` is not provided, the `Chain ID` line should be omitted from the message.
+
+Client must not prefix, suffix or otherwise modify the `SignMessageData` value before signing it.
+Clients should perform validation on the `SignMessageData` before signing to ensure that it meets expected criteria and to prevent potential security issues.
+
+The following function illustrates how to create a human-readable message text from `SignMessageData`:
+
+```ts
+export function createSignMessageText(input: SignMessageData): string {
+  let message = `${input.domain} wants you to sign message with your account:\n`;
+  message += `${input.address}`;
+
+  if (input.statement) {
+    message += `\n\n${input.statement}`;
+  }
+
+  const fields: string[] = [];
+
+  if (input.chainId) {
+    fields.push(`Chain ID: ${input.chainId}`);
+  }
+  if (input.nonce) {
+    fields.push(`Nonce: ${input.nonce}`);
+  }
+  if (input.issuedAt) {
+    fields.push(`Issued At: ${input.issuedAt}`);
+  }
+  if (fields.length) {
+    message += `\n\n${fields.join("\n")}`;
+  }
+
+  return message;
+}
+
+```
+
 After signing, the blink client will continue the chain-of-actions by making a
 POST request to the provided `PostNextActionLink` endpoint with a payload
 similar to the normal `ActionPostRequest` fields (see
