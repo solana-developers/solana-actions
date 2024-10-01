@@ -3,7 +3,7 @@ import type { SignMessageData } from "@solana/actions-spec";
 export interface SignMessageVerificationOptions {
   expectedAddress?: string;
   expectedDomains?: string[];
-  expectedChainIds: string[];
+  expectedChainIds?: string[];
   issuedAtThreshold?: number;
 }
 
