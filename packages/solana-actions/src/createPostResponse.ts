@@ -13,7 +13,7 @@ import {
   createActionIdentifierInstruction,
   getActionIdentityFromEnv,
 } from "./actionIdentity.js";
-import { ActionPostResponse } from "@solana/actions-spec";
+import { ActionPostResponse, TransactionResponse } from "@solana/actions-spec";
 
 /**
  * Thrown when the Action POST response cannot be created.
@@ -29,7 +29,7 @@ export interface CreateActionPostResponseArgs<
   TransactionType = Transaction | VersionedTransaction,
 > {
   /** POST response fields per the Solana Actions spec. */
-  fields: Omit<ActionPostResponse, "transaction"> & {
+  fields: Omit<TransactionResponse, "transaction"> & {
     /** Solana transaction to be base64 encoded. */
     transaction: TransactionType;
   };
