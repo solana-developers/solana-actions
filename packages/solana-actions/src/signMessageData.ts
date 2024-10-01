@@ -1,4 +1,4 @@
-import { SignMessageData } from "@solana/actions-spec";
+import type { SignMessageData } from "@solana/actions-spec";
 
 export interface SignMessageVerificationOptions {
   expectedAddress?: string;
@@ -13,7 +13,18 @@ export enum SignMessageVerificationErrorType {
   CHAIN_ID_MISMATCH = "CHAIN_ID_MISMATCH",
   ISSUED_TOO_FAR_IN_THE_PAST = "ISSUED_TOO_FAR_IN_THE_PAST",
   ISSUED_TOO_FAR_IN_THE_FUTURE = "ISSUED_TOO_FAR_IN_THE_FUTURE",
+  INVALID_DATA = "INVALID_DATA",
 }
+
+const DOMAIN =
+  "(?<domain>[^\\n]+?) wants you to sign message with your account:\\n";
+const ADDRESS = "(?<address>[^\\n]+)(?:\\n|$)";
+const STATEMENT = "(?:\\n(?<statement>[\\S\\s]*?)(?:\\n|$))";
+const CHAIN_ID = "(?:\\nChain ID: (?<chainId>[^\\n]+))?";
+const NONCE = "\\nNonce: (?<nonce>[^\\n]+)";
+const ISSUED_AT = "\\nIssued At: (?<issuedAt>[^\\n]+)";
+const FIELDS = `${CHAIN_ID}${NONCE}${ISSUED_AT}`;
+const MESSAGE = new RegExp(`^${DOMAIN}${ADDRESS}${STATEMENT}${FIELDS}\\n*$`);
 
 /**
  * Create a human-readable message text for the user to sign. Interoperable with SIWS.
@@ -47,6 +58,22 @@ export function createSignMessageText(input: SignMessageData): string {
   return message;
 }
 
+export function parseSignMessageText(text: string): SignMessageData | null {
+  const match = MESSAGE.exec(text);
+  if (!match) return null;
+  const groups = match.groups;
+  if (!groups) return null;
+
+  return {
+    domain: groups.domain,
+    address: groups.address,
+    statement: groups.statement,
+    nonce: groups.nonce,
+    chainId: groups.chainId,
+    issuedAt: groups.issuedAt,
+  };
+}
+
 /**
  * Verify the sign message data before signing.
  * @param data The data to be signed.
@@ -58,49 +85,63 @@ export function verifySignMessageData(
   data: SignMessageData,
   opts: SignMessageVerificationOptions,
 ) {
-  const {
-    expectedAddress,
-    expectedChainIds,
-    issuedAtThreshold,
-    expectedDomains,
-  } = opts;
-  const errors: SignMessageVerificationErrorType[] = [];
-  const now = Date.now();
-
-  // verify if parsed address is same as the expected address
-  if (expectedAddress && data.address !== expectedAddress) {
-    errors.push(SignMessageVerificationErrorType.ADDRESS_MISMATCH);
-  }
-
-  // verify if parsed domain is in the expected domains
-  if (expectedDomains && !expectedDomains.includes(data.domain)) {
-    errors.push(SignMessageVerificationErrorType.DOMAIN_MISMATCH);
-  }
-
-  // verify if parsed chainId is same as the expected chainId
   if (
-    expectedChainIds &&
-    data.chainId &&
-    !expectedChainIds.includes(data.chainId)
+    !data.address ||
+    !data.domain ||
+    !data.issuedAt ||
+    !data.nonce ||
+    !data.statement
   ) {
-    errors.push(SignMessageVerificationErrorType.CHAIN_ID_MISMATCH);
+    return [SignMessageVerificationErrorType.INVALID_DATA];
   }
 
-  // verify if parsed issuedAt is within +- issuedAtThreshold of the current timestamp
-  if (issuedAtThreshold !== undefined) {
-    const iat = Date.parse(data.issuedAt);
-    if (Math.abs(iat - now) > issuedAtThreshold) {
-      if (iat < now) {
-        errors.push(
-          SignMessageVerificationErrorType.ISSUED_TOO_FAR_IN_THE_PAST,
-        );
-      } else {
-        errors.push(
-          SignMessageVerificationErrorType.ISSUED_TOO_FAR_IN_THE_FUTURE,
-        );
+  try {
+    const {
+      expectedAddress,
+      expectedChainIds,
+      issuedAtThreshold,
+      expectedDomains,
+    } = opts;
+    const errors: SignMessageVerificationErrorType[] = [];
+    const now = Date.now();
+
+    // verify if parsed address is same as the expected address
+    if (expectedAddress && data.address !== expectedAddress) {
+      errors.push(SignMessageVerificationErrorType.ADDRESS_MISMATCH);
+    }
+
+    // verify if parsed domain is in the expected domains
+    if (expectedDomains && !expectedDomains.includes(data.domain)) {
+      errors.push(SignMessageVerificationErrorType.DOMAIN_MISMATCH);
+    }
+
+    // verify if parsed chainId is same as the expected chainId
+    if (
+      expectedChainIds &&
+      data.chainId &&
+      !expectedChainIds.includes(data.chainId)
+    ) {
+      errors.push(SignMessageVerificationErrorType.CHAIN_ID_MISMATCH);
+    }
+
+    // verify if parsed issuedAt is within +- issuedAtThreshold of the current timestamp
+    if (issuedAtThreshold !== undefined) {
+      const iat = Date.parse(data.issuedAt);
+      if (Math.abs(iat - now) > issuedAtThreshold) {
+        if (iat < now) {
+          errors.push(
+            SignMessageVerificationErrorType.ISSUED_TOO_FAR_IN_THE_PAST,
+          );
+        } else {
+          errors.push(
+            SignMessageVerificationErrorType.ISSUED_TOO_FAR_IN_THE_FUTURE,
+          );
+        }
       }
     }
-  }
 
-  return errors;
+    return errors;
+  } catch (e) {
+    return [SignMessageVerificationErrorType.INVALID_DATA];
+  }
 }

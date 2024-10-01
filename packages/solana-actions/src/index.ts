@@ -10,3 +10,4 @@ export * from "./fetchTransaction.js";
 export * from "./findReference.js";
 export * from "./createPostResponse.js";
 export * from "./actionIdentity.js";
+export * from "./signMessageData.js";
