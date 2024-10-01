@@ -748,6 +748,8 @@ export type SignMessageData = {
 When received by the blink client, the user should be shown the plaintext `data`
 value and prompted to sign it with their wallet to generate a `signature`.
 
+The `data` can be a plaintext string or a structured `SignMessageData` object.
+
 When using `SignMessageData`, it must be formatted as standardized, human-readable plaintext suitable for signing. 
 Both the client and server must generate the message using the same method to ensure proper verification.
 The following template must be used by both the Action API and the client to format `SignMessageData`:
@@ -765,8 +767,8 @@ Issued At: ${issuedAt}
 
 If `chainId` is not provided, the `Chain ID` line should be omitted from the message.
 
-Client must not prefix, suffix or otherwise modify the `SignMessageData` value before signing it.
-Clients should perform validation on the `SignMessageData` before signing to ensure that it meets expected criteria and to prevent potential security issues.
+Client should not prefix, suffix or otherwise modify the `SignMessageData` value before signing it.
+Client should perform validation on the `SignMessageData` before signing to ensure that it meets expected criteria and to prevent potential security issues.
 
 The following function illustrates how to create a human-readable message text from `SignMessageData`:
 
