@@ -27,7 +27,7 @@ const FIELDS = `${CHAIN_ID}${NONCE}${ISSUED_AT}`;
 const MESSAGE = new RegExp(`^${DOMAIN}${ADDRESS}${STATEMENT}${FIELDS}\\n*$`);
 
 /**
- * Create a human-readable message text for the user to sign. Interoperable with SIWS.
+ * Create a human-readable message text for the user to sign.
  *
  * @param input The data to be signed.
  * @returns The message text.
@@ -58,6 +58,10 @@ export function createSignMessageText(input: SignMessageData): string {
   return message;
 }
 
+/**
+ * Parse the sign message text to extract the data to be signed.
+ * @param text The message text to be parsed.
+ */
 export function parseSignMessageText(text: string): SignMessageData | null {
   const match = MESSAGE.exec(text);
   if (!match) return null;
