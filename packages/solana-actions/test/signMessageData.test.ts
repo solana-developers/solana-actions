@@ -42,7 +42,7 @@ Issued At: ${validSignMessageData.issuedAt}
         chainId: undefined,
       };
       const expectedMessage = `
-example.com wants you to sign message with your account:
+example.com wants you to sign a message with your account:
 ${validSignMessageData.address}
 
 ${validSignMessageData.statement}
