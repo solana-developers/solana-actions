@@ -765,7 +765,7 @@ Nonce: ${nonce}
 Issued At: ${issuedAt}
 ```
 
-If `chainId` is not provided, the `Chain ID` line should be omitted from the message.
+If `chainId` is not provided, the `Chain ID` line should be omitted from the message to be signed.
 
 Client should not prefix, suffix or otherwise modify the `SignMessageData` value before signing it.
 Client should perform validation on the `SignMessageData` before signing to ensure that it meets expected criteria and to prevent potential security issues.
