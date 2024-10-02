@@ -1,4 +1,8 @@
-import { ActionPostRequest, ActionPostResponse } from "@solana/actions-spec";
+import {
+  ActionPostRequest,
+  ActionPostResponse,
+  TransactionResponse,
+} from "@solana/actions-spec";
 import { Commitment, Connection, PublicKey } from "@solana/web3.js";
 import { Transaction } from "@solana/web3.js";
 import fetch from "cross-fetch";
@@ -49,7 +53,7 @@ export async function fetchTransaction(
     body: JSON.stringify(fields),
   });
 
-  const json = (await response.json()) as ActionPostResponse;
+  const json = (await response.json()) as TransactionResponse;
   if (!json?.transaction) throw new FetchActionError("missing transaction");
   if (typeof json.transaction !== "string")
     throw new FetchActionError("invalid transaction");

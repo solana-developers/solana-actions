@@ -9,6 +9,9 @@
   "engines": {
     "node": ">=16"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "prettier": "npx prettier --write '{*,**/*}.{ts,tsx,js,jsx,css,json}'"
   },
