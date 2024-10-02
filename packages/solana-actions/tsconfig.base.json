@@ -6,7 +6,7 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "esModuleInterop": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "noEmitOnError": true,
     "resolveJsonModule": true,
     "strict": true,

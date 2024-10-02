@@ -1,5 +1,11 @@
 # @solana/actions
 
+## 1.6.5
+
+### Patch Changes
+
+- bump spec version
+
 ## 1.6.4
 
 ### Patch Changes
