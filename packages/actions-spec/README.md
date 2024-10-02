@@ -750,7 +750,7 @@ value and prompted to sign it with their wallet to generate a `signature`.
 
 The `data` can be a plaintext string or a structured `SignMessageData` object.
 
-When using `SignMessageData`, it must be formatted as standardized, human-readable plaintext suitable for signing. 
+When using `SignMessageData`, it must be formatted as a standardized, human-readable plaintext suitable for signing. 
 Both the client and server must generate the message using the same method to ensure proper verification.
 The following template must be used by both the Action API and the client to format `SignMessageData`:
 
