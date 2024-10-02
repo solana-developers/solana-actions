@@ -80,7 +80,7 @@ Issued At: ${minimalData.issuedAt}
   describe("parseSignMessageText", () => {
     it("should parse a valid sign message text", () => {
       const text = `
-example.com wants you to sign message with your account:
+example.com wants you to sign a message with your account:
 ${validSignMessageData.address}
 
 ${validSignMessageData.statement}
