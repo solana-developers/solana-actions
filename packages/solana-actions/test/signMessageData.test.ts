@@ -96,7 +96,7 @@ Issued At: ${validSignMessageData.issuedAt}
 
     it("should parse a sign message without optional chainId", () => {
       const text = `
-example.com wants you to sign message with your account:
+example.com wants you to sign a message with your account:
 ${validSignMessageData.address}
 
 ${validSignMessageData.statement}
