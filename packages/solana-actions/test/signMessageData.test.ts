@@ -116,7 +116,7 @@ Issued At: ${validSignMessageData.issuedAt}
 
     it("should return null for missing nonce", () => {
       const text = `
-example.com wants you to sign message with your account:
+example.com wants you to sign a message with your account:
 ${validSignMessageData.address}
 
 ${validSignMessageData.statement}
