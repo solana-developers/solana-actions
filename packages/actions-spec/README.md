@@ -774,7 +774,7 @@ The following function illustrates how to create a human-readable message text f
 
 ```ts
 export function createSignMessageText(input: SignMessageData): string {
-  let message = `${input.domain} wants you to sign message with your account:\n`;
+  let message = `${input.domain} wants you to sign a message with your account:\n`;
   message += `${input.address}`;
 
   if (input.statement) {
