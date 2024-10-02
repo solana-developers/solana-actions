@@ -17,7 +17,7 @@ export enum SignMessageVerificationErrorType {
 }
 
 const DOMAIN =
-  "(?<domain>[^\\n]+?) wants you to sign message with your account:\\n";
+  "(?<domain>[^\\n]+?) wants you to sign a message with your account:\\n";
 const ADDRESS = "(?<address>[^\\n]+)(?:\\n|$)";
 const STATEMENT = "(?:\\n(?<statement>[\\S\\s]*?)(?:\\n|$))";
 const CHAIN_ID = "(?:\\nChain ID: (?<chainId>[^\\n]+))?";
