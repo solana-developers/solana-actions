@@ -214,6 +214,15 @@ Issued At: ${validSignMessageData.issuedAt}
       expect(errors).toStrictEqual([]);
     });
 
+    it("should pass verification with www domain data", () => {
+      const opts = {
+        expectedDomains: ["www.example.com"],
+      };
+
+      const errors = verifySignMessageData(validSignMessageData, opts);
+      expect(errors).toStrictEqual([]);
+    });
+
     it("should return ADDRESS_MISMATCH error if the address does not match", () => {
       const opts = {
         ...verificationOptions,

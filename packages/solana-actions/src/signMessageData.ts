@@ -114,12 +114,15 @@ export function verifySignMessageData(
       errors.push(SignMessageVerificationErrorType.ADDRESS_MISMATCH);
     }
 
-    // verify if parsed domain is in the expected domains
-    if (expectedDomains && !expectedDomains.includes(data.domain)) {
-      errors.push(SignMessageVerificationErrorType.DOMAIN_MISMATCH);
+    if (expectedDomains) {
+      const expectedDomainsNormalized = expectedDomains.map(normalizeDomain);
+      const normalizedDomain = normalizeDomain(data.domain);
+
+      if (!expectedDomainsNormalized.includes(normalizedDomain)) {
+        errors.push(SignMessageVerificationErrorType.DOMAIN_MISMATCH);
+      }
     }
 
-    // verify if parsed chainId is same as the expected chainId
     if (
       expectedChainIds &&
       data.chainId &&
@@ -128,7 +131,6 @@ export function verifySignMessageData(
       errors.push(SignMessageVerificationErrorType.CHAIN_ID_MISMATCH);
     }
 
-    // verify if parsed issuedAt is within +- issuedAtThreshold of the current timestamp
     if (issuedAtThreshold !== undefined) {
       const iat = Date.parse(data.issuedAt);
       if (Math.abs(iat - now) > issuedAtThreshold) {
@@ -148,4 +150,8 @@ export function verifySignMessageData(
   } catch (e) {
     return [SignMessageVerificationErrorType.INVALID_DATA];
   }
+}
+
+function normalizeDomain(domain: string): string {
+  return domain.replace(/^www\./, "");
 }
