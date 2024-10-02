@@ -35,25 +35,15 @@ const MESSAGE = new RegExp(`^${DOMAIN}${ADDRESS}${STATEMENT}${FIELDS}\\n*$`);
 export function createSignMessageText(input: SignMessageData): string {
   let message = `${input.domain} wants you to sign a message with your account:\n`;
   message += `${input.address}`;
-
-  if (input.statement) {
-    message += `\n\n${input.statement}`;
-  }
-
+  message += `\n\n${input.statement}`;
   const fields: string[] = [];
 
   if (input.chainId) {
     fields.push(`Chain ID: ${input.chainId}`);
   }
-  if (input.nonce) {
-    fields.push(`Nonce: ${input.nonce}`);
-  }
-  if (input.issuedAt) {
-    fields.push(`Issued At: ${input.issuedAt}`);
-  }
-  if (fields.length) {
-    message += `\n\n${fields.join("\n")}`;
-  }
+  fields.push(`Nonce: ${input.nonce}`);
+  fields.push(`Issued At: ${input.issuedAt}`);
+  message += `\n\n${fields.join("\n")}`;
 
   return message;
 }
