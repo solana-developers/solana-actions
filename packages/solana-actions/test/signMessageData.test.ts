@@ -64,7 +64,7 @@ Issued At: ${validSignMessageData.issuedAt}
       };
 
       const expectedMessage = `
-test.com wants you to sign message with your account:
+test.com wants you to sign a message with your account:
 ${minimalData.address}
 
 ${minimalData.statement}
