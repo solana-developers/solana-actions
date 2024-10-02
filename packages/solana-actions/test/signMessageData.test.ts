@@ -23,7 +23,7 @@ describe("Sign Message Functions", () => {
   describe("createSignMessageText", () => {
     it("should create a properly formatted sign message text", () => {
       const expectedMessage = `
-example.com wants you to sign message with your account:
+example.com wants you to sign a message with your account:
 ${validSignMessageData.address}
 
 ${validSignMessageData.statement}
