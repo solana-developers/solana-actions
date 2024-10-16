@@ -750,9 +750,11 @@ value and prompted to sign it with their wallet to generate a `signature`.
 
 The `data` can be a plaintext string or a structured `SignMessageData` object.
 
-When using `SignMessageData`, it must be formatted as a standardized, human-readable plaintext suitable for signing. 
-Both the client and server must generate the message using the same method to ensure proper verification.
-The following template must be used by both the Action API and the client to format `SignMessageData`:
+When using `SignMessageData`, it must be formatted as a standardized,
+human-readable plaintext suitable for signing. Both the client and server must
+generate the message using the same method to ensure proper verification. The
+following template must be used by both the Action API and the client to format
+`SignMessageData`:
 
 ```
 ${domain} wants you to sign a message with your account:
@@ -765,12 +767,16 @@ Nonce: ${nonce}
 Issued At: ${issuedAt}
 ```
 
-If `chainId` is not provided, the `Chain ID` line should be omitted from the message to be signed.
+If `chainId` is not provided, the `Chain ID` line should be omitted from the
+message to be signed.
 
-Client should not prefix, suffix or otherwise modify the `SignMessageData` value before signing it.
-Client should perform validation on the `SignMessageData` before signing to ensure that it meets expected criteria and to prevent potential security issues.
+Client should not prefix, suffix or otherwise modify the `SignMessageData` value
+before signing it. Client should perform validation on the `SignMessageData`
+before signing to ensure that it meets expected criteria and to prevent
+potential security issues.
 
-The following function illustrates how to create a human-readable message text from `SignMessageData`:
+The following function illustrates how to create a human-readable message text
+from `SignMessageData`:
 
 ```ts
 export function createSignMessageText(input: SignMessageData): string {
@@ -791,13 +797,16 @@ export function createSignMessageText(input: SignMessageData): string {
 ```
 
 After signing, the blink client will continue the chain-of-actions by making a
-POST request to the provided `PostNextActionLink` endpoint with a payload
-similar to the normal `ActionPostRequest` fields (see
-[Action Chaining](#action-chaining)), but with the additional fields:
+POST request to the provided `PostNextActionLink` endpoint with a payload of
+`SignMessagePostRequest`. This payload similar to the normal `ActionPostRequest`
+fields (see [Action Chaining](#action-chaining)), but with the additional
+fields:
 
 - `signature` (required) - the signature created by the account singing the data
   (as a base58 encoded string)
-- `state` (optional) - the same unmodified `state` value the action api initial
+- `data` (required) - the same unmodified `data` value the Action api initial
+  provided, relayed back from the client.
+- `state` (optional) - the same unmodified `state` value the Action api initial
   provided, relayed back from the client.
 
 ### Action Errors
