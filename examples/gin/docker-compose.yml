@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  blinks-app:
+    build: .
+    network_mode: host
+    container_name: blinks-app
+    restart: always
+
