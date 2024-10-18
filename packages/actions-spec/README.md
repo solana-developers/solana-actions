@@ -804,10 +804,10 @@ fields:
 
 - `signature` (required) - the signature created by the account singing the data
   (as a base58 encoded string)
-- `data` (required) - the same unmodified `data` value the Action api initial
+- `data` (required) - the same unmodified `data` value the Action api initially
   provided, relayed back from the client.
-- `state` (optional) - the same unmodified `state` value the Action api initial
-  provided, relayed back from the client.
+- `state` (optional) - the same unmodified `state` value the Action api
+  initially provided, relayed back from the client.
 
 ### Action Errors
 
