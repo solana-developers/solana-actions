@@ -798,9 +798,9 @@ export function createSignMessageText(input: SignMessageData): string {
 
 After signing, the blink client will continue the chain-of-actions by making a
 POST request to the provided `PostNextActionLink` endpoint with a payload of
-`SignMessagePostRequest`. This payload similar to the normal `ActionPostRequest`
-fields (see [Action Chaining](#action-chaining)), but with the additional
-fields:
+`SignMessagePostRequest`. This payload is similar to the normal
+`ActionPostRequest` fields (see [Action Chaining](#action-chaining)), but with
+the following modifications:
 
 - `signature` (required) - the signature created by the account singing the data
   (as a base58 encoded string)
