@@ -333,12 +333,12 @@ export type ActionPostResponse =
   | SignMessageResponse;
 
 /**
- * Response body payload sent via POST request (after performing a "sign message" action)
+ * Request body payload sent via POST request (after performing a "sign message" action)
  * to obtain the next action in a successive chain of actions
  *
  * @see {@link NextAction} should be returned as the POST response
  */
-export interface SignMessagePostRequest
+export interface MessageNextActionPostRequest
   extends Omit<NextActionPostRequest, "data"> {
   /** signature produced from the previous action's message signing request */
   signature: string;
