@@ -276,7 +276,6 @@ export type NextAction = Action<"action"> | CompletedAction;
  *
  * @see {@link NextAction} should be returned as the POST response
  */
-
 export interface NextActionPostRequest extends Omit<ActionPostRequest, "type"> {
   /** signature produced from the previous action (either a transaction id or message signature) */
   signature?: string;
@@ -332,6 +331,22 @@ export type ActionPostResponse =
   | PostResponse
   | ExternalLinkResponse
   | SignMessageResponse;
+
+/**
+ * Request body payload sent via POST request (after performing a "sign message" action)
+ * to obtain the next action in a successive chain of actions
+ *
+ * @see {@link NextAction} should be returned as the POST response
+ */
+export interface MessageNextActionPostRequest
+  extends Omit<NextActionPostRequest, "data"> {
+  /** signature produced from the previous action's message signing request */
+  signature: string;
+  /** unedited `data` value initially provided by the Action API, relayed back to the Action API */
+  data: SignMessageResponse["data"];
+  /** unedited `state` value initially provided by the Action API, relayed back to the Action API */
+  state?: SignMessageResponse["state"];
+}
 
 /**
  * Error message that can be returned from an Actions API
