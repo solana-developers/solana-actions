@@ -1,5 +1,12 @@
 # @solana/actions-spec
 
+## 2.4.2
+
+### Patch Changes
+
+- clarification for message signing
+- fix missing types
+
 ## 2.4.1
 
 ### Patch Changes
