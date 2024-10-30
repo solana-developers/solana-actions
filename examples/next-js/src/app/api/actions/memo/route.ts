@@ -5,95 +5,102 @@
 import {
   ActionPostResponse,
   createPostResponse,
-  MEMO_PROGRAM_ID,
   ActionGetResponse,
-  ActionPostRequest,
   createActionHeaders,
-  ActionError,
+  Action,
+  ActionPostRequest,
 } from "@solana/actions";
 import {
-  clusterApiUrl,
-  ComputeBudgetProgram,
-  Connection,
   PublicKey,
-  Transaction,
-  TransactionInstruction,
+  TransactionMessage,
+  VersionedTransaction,
 } from "@solana/web3.js";
+import { createActionRoutes } from "../../utils/action-handler";
+import { getConnection } from "../../utils/connection";
+import { MemoQuerySchema } from "./schema";
 
-// create the standard headers for this route (including CORS)
+// Create memo program instruction
+import { createMemoInstruction } from "./instruction";
+
 const headers = createActionHeaders();
 
-export const GET = async (req: Request) => {
-  const payload: ActionGetResponse = {
+async function handleGet(req: Request): Promise<ActionGetResponse> {
+  const requestUrl = new URL(req.url);
+  const baseHref = new URL("/api/actions/memo", requestUrl.origin).toString();
+
+  return {
     type: "action",
-    title: "Actions Example - Simple On-chain Memo",
-    icon: new URL("/solana_devs.jpg", new URL(req.url).origin).toString(),
-    description: "Send a message on-chain using a Memo",
-    label: "Send Memo",
+    title: "Actions Example - Write Memo",
+    icon: new URL("/solana_devs.jpg", requestUrl.origin).toString(),
+    description: "Write a message to the Solana network",
+    label: "Write",
+    links: {
+      actions: [
+        {
+          label: "Write Message",
+          href: `${baseHref}?message={message}`,
+          parameters: [
+            {
+              type: "textarea",
+              name: "message",
+              label: "Enter your message",
+              required: true,
+              min: 1,
+              max: 256,
+            },
+          ],
+        },
+      ],
+    },
   };
+}
 
-  return Response.json(payload, {
-    headers,
+async function handlePost(req: Request): Promise<ActionPostResponse> {
+  const requestUrl = new URL(req.url);
+  const { message } = parseQueryParams(requestUrl);
+
+  const body: ActionPostRequest = await req.json();
+  const account = new PublicKey(body.account);
+
+  const connection = getConnection();
+  const { blockhash } = await connection.getLatestBlockhash();
+
+  // Create the memo instruction
+  const memoInstruction = createMemoInstruction(message, [account]);
+
+  // Create a versioned transaction
+  const messageV0 = new TransactionMessage({
+    payerKey: account,
+    recentBlockhash: blockhash,
+    instructions: [memoInstruction],
+  }).compileToV0Message();
+
+  const transaction = new VersionedTransaction(messageV0);
+
+  return createPostResponse({
+    fields: {
+      transaction,
+      message: `Write memo: "${message}"`,
+    },
   });
-};
+}
 
-// DO NOT FORGET TO INCLUDE THE `OPTIONS` HTTP METHOD
-// THIS WILL ENSURE CORS WORKS FOR BLINKS
-export const OPTIONS = async () => Response.json(null, { headers });
+function parseQueryParams(requestUrl: URL) {
+  const result = MemoQuerySchema.safeParse(
+    Object.fromEntries(requestUrl.searchParams)
+  );
 
-export const POST = async (req: Request) => {
-  try {
-    const body: ActionPostRequest = await req.json();
-
-    let account: PublicKey;
-    try {
-      account = new PublicKey(body.account);
-    } catch (err) {
-      throw 'Invalid "account" provided';
-    }
-
-    const connection = new Connection(
-      process.env.SOLANA_RPC! || clusterApiUrl("devnet"),
-    );
-
-    const transaction = new Transaction().add(
-      // note: `createPostResponse` requires at least 1 non-memo instruction
-      ComputeBudgetProgram.setComputeUnitPrice({
-        microLamports: 1000,
-      }),
-      new TransactionInstruction({
-        programId: new PublicKey(MEMO_PROGRAM_ID),
-        data: Buffer.from("this is a simple memo message2", "utf8"),
-        keys: [],
-      }),
-    );
-
-    // set the end user as the fee payer
-    transaction.feePayer = account;
-
-    transaction.recentBlockhash = (
-      await connection.getLatestBlockhash()
-    ).blockhash;
-
-    const payload: ActionPostResponse = await createPostResponse({
-      fields: {
-        transaction,
-        message: "Post this memo on-chain",
-      },
-      // no additional signers are required for this transaction
-      // signers: [],
-    });
-
-    return Response.json(payload, {
-      headers,
-    });
-  } catch (err) {
-    console.log(err);
-    let actionError: ActionError = { message: "An unknown error occurred" };
-    if (typeof err == "string") actionError.message = err;
-    return Response.json(actionError, {
-      status: 400,
-      headers,
-    });
+  if (!result.success) {
+    throw result.error;
   }
-};
+
+  return result.data;
+}
+
+export const { GET, POST, OPTIONS } = createActionRoutes(
+  {
+    GET: handleGet,
+    POST: handlePost,
+  },
+  headers
+);
