@@ -22,7 +22,11 @@ import { MemoQuerySchema } from "./schema";
 // Create memo program instruction
 import { createMemoInstruction } from "./instruction";
 
+import { createQueryParser } from "../../utils/validation";
+
 const headers = createActionHeaders();
+
+const parseQueryParams = createQueryParser(MemoQuerySchema);
 
 async function handleGet(req: Request): Promise<ActionGetResponse> {
   const requestUrl = new URL(req.url);
@@ -83,18 +87,6 @@ async function handlePost(req: Request): Promise<ActionPostResponse> {
       message: `Write memo: "${message}"`,
     },
   });
-}
-
-function parseQueryParams(requestUrl: URL) {
-  const result = MemoQuerySchema.safeParse(
-    Object.fromEntries(requestUrl.searchParams)
-  );
-
-  if (!result.success) {
-    throw result.error;
-  }
-
-  return result.data;
 }
 
 export const { GET, POST, OPTIONS } = createActionRoutes(

@@ -15,12 +15,15 @@ import {
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
+import { createQueryParser } from "../../utils/validation";
 import { TransferSolQuerySchema } from "./schema";
 import { createActionRoutes } from "../../utils/action-handler";
 import { getConnection } from "../../utils/connection";
 
 // create the standard headers for this route (including CORS)
 const headers = createActionHeaders();
+
+const parseQueryParams = createQueryParser(TransferSolQuerySchema);
 
 async function handleGet(req: Request): Promise<ActionGetResponse> {
   const requestUrl = new URL(req.url);
@@ -79,7 +82,8 @@ async function handlePost(req: Request): Promise<ActionPostResponse> {
     lamports: amount * LAMPORTS_PER_SOL,
   });
 
-  const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+  const { blockhash, lastValidBlockHeight } =
+    await connection.getLatestBlockhash();
 
   const transaction = new Transaction({
     feePayer: account,
@@ -95,22 +99,10 @@ async function handlePost(req: Request): Promise<ActionPostResponse> {
   });
 }
 
-function parseQueryParams(requestUrl: URL) {
-  const result = TransferSolQuerySchema.safeParse(
-    Object.fromEntries(requestUrl.searchParams)
-  );
-
-  if (!result.success) {
-    throw result.error;
-  }
-
-  return result.data;
-}
-
 export const { GET, POST, OPTIONS } = createActionRoutes(
   {
     GET: handleGet,
     POST: handlePost,
   },
-  headers
+  headers,
 );

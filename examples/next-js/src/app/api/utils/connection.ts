@@ -28,7 +28,7 @@ export type ConnectionConfig = {
  * const connection = getConnection({ commitment: 'confirmed' });
  */
 export function getConnection(config: ConnectionConfig = {}): Connection {
-  const endpoint = config.endpoint || process.env.SOLANA_RPC || clusterApiUrl("devnet");
+  const endpoint = config.endpoint || process.env.SOLANA_RPC || clusterApiUrl("mainnet-beta");
   
   return new Connection(endpoint, {
     commitment: config.commitment || 'confirmed',
