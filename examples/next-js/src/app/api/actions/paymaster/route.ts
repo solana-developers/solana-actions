@@ -9,16 +9,12 @@ import { createActionRoutes } from "../../utils/action-handler";
 import { loadPaymasterKeypair } from "../../utils/keypair";
 import { createQueryParser } from "../../utils/validation";
 import { GenericTransactionExtensionSchema } from "./schema";
+import { VersionedTransaction } from "@solana/web3.js";
 import {
-  AddressLookupTableAccount,
-  Message,
-  MessageV0,
-  Transaction,
-  TransactionMessage,
-  VersionedMessage,
-  VersionedTransaction,
-} from "@solana/web3.js";
-import { getConnection } from "../../utils/connection";
+  getConnection,
+  hydrateTransactionMessage,
+} from "../../utils/connection";
+import { fetchBlink } from "../../utils/fetch";
 
 const headers = createActionHeaders();
 
@@ -62,42 +58,27 @@ const parseQueryParams = createQueryParser(GenericTransactionExtensionSchema);
 // http://localhost:3000/api/actions/transfer-sol?amount=0.001&to=<account>
 // http://localhost:3000/api/actions/transfer-spl?&amount=1&to=<account>&mint=<mint>
 
+// http://localhost:3000/api/actions/lighthouse/lamports?protectAccount=6Le7uLy8Y2JvCq5x5huvF3pSQBvP1Y6W325wNpFz4s4u&solSpend=0.001&blink=
+// http%3A%2F%2Flocalhost%3A3000%2Fapi%2Factions%2Ftransfer-sol%3Famount%3D0.01%26to%3D67ZiM1TRqPFR5s2Jz1z4d6noHHBRRzt1Te6xbWmPgYF7
+// localhost:3000/api/actions/transfer-sol?amount=0.01&to=67ZiM1TRqPFR5s2Jz1z4d6noHHBRRzt1Te6xbWmPgYF7
+
 async function handlePost(req: Request): Promise<ActionPostResponse> {
+  console.log("Request", req);
   const requestUrl = new URL(req.url);
+  console.log("Request URL", requestUrl);
   const paymaster = loadPaymasterKeypair();
   const { blink } = parseQueryParams(requestUrl);
 
   const body: ActionPostRequest = await req.json();
 
-  const txResponse = await fetch(blink, {
-    method: "POST",
-    body: JSON.stringify({ account: body.account }),
-  });
+  const txResponseBody = await fetchBlink(blink, body.account);
 
-  const txResponseBody: ActionPostResponse = await txResponse.json();
+  const connection = getConnection();
   const tx = VersionedTransaction.deserialize(
     Buffer.from(txResponseBody.transaction, "base64"),
   );
 
-  // hydrate the message's instructions using the static account keys and lookup tables
-  const connection = getConnection();
-  const LUTs = (
-    await Promise.all(
-      tx.message.addressTableLookups.map((acc) =>
-        connection.getAddressLookupTable(acc.accountKey),
-      ),
-    )
-  )
-    .map((lut) => lut.value)
-    .filter((val) => val !== null) as AddressLookupTableAccount[];
-
-  // if we need to get all accounts
-  // const allAccs = tx.message.getAccountKeys({ addressLookupTableAccounts: LUTs })
-  //   .keySegments().reduce((acc, cur) => acc.concat(cur), []);
-
-  const txMessage = TransactionMessage.decompile(tx.message, {
-    addressLookupTableAccounts: LUTs,
-  });
+  const txMessage = await hydrateTransactionMessage(tx, connection);
 
   // Modify the message to use the paymaster as the payer
   txMessage.payerKey = paymaster.publicKey;

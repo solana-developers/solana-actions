@@ -94,5 +94,5 @@ export const { GET, POST, OPTIONS } = createActionRoutes(
     GET: handleGet,
     POST: handlePost,
   },
-  headers
+  headers,
 );
