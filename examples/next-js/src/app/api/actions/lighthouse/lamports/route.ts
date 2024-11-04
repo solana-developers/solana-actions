@@ -63,6 +63,7 @@ async function handleGet(req: Request): Promise<ActionGetResponse> {
           parameters: [
             {
               type: "url",
+              //   type: "blink",
               name: "blink",
               label: "Blink",
               required: true,
@@ -144,13 +145,14 @@ async function handlePost(req: Request): Promise<ActionPostResponse> {
         },
       }).getInstructions()[0],
     ),
-    toWeb3JsInstruction(
-      memoryClose(umi, {
-        memory: publicKey(memory),
-        memoryId: 0,
-        memoryBump,
-      }).getInstructions()[0],
-    ),
+    // Close instruction when I want the Sol back haha
+    // toWeb3JsInstruction(
+    //   memoryClose(umi, {
+    //     memory: publicKey(memory),
+    //     memoryId: 0,
+    //     memoryBump,
+    //   }).getInstructions()[0],
+    // ),
   ];
 
   txMessage.instructions = [

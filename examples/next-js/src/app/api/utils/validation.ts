@@ -137,3 +137,13 @@ export function createQueryParser<
     return result.data;
   };
 }
+
+// insertion one of "prepend", "append"
+export const insertionTypeSchema = z
+  .enum(["prepend", "append"])
+  .optional()
+  .default("append");
+
+export type InsertionType = z.infer<typeof insertionTypeSchema>;
+
+export const blinkSchema = z.string().url().optional();

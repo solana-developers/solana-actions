@@ -14,11 +14,21 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
+  TransactionInstruction,
+  VersionedTransaction,
 } from "@solana/web3.js";
-import { createQueryParser } from "../../utils/validation";
+import { createQueryParser, InsertionType } from "../../utils/validation";
 import { TransferSolQuerySchema } from "./schema";
-import { createActionRoutes } from "../../utils/action-handler";
-import { getConnection } from "../../utils/connection";
+import {
+  createActionRoutes,
+  insertInstructionsInBlink,
+} from "../../utils/action-handler";
+import {
+  getConnection,
+  hydrateTransactionMessage,
+} from "../../utils/connection";
+import { Url } from "next/dist/shared/lib/router/router";
+import { fetchBlink } from "../../utils/fetch";
 
 // create the standard headers for this route (including CORS)
 const headers = createActionHeaders();
@@ -42,7 +52,7 @@ async function handleGet(req: Request): Promise<ActionGetResponse> {
       actions: [
         {
           label: "Send SOL",
-          href: `${baseHref}&amount={amount}&to={to}`,
+          href: `${baseHref}&amount={amount}&to={to}&blink={blink}&insertion={insertion}`,
           parameters: [
             {
               name: "amount",
@@ -54,6 +64,22 @@ async function handleGet(req: Request): Promise<ActionGetResponse> {
               label: "Enter the address to send SOL",
               required: true,
             },
+            {
+              type: "url",
+              name: "blink",
+              label: "",
+              required: false,
+            },
+            {
+              type: "radio",
+              name: "insertion",
+              label: "",
+              required: false,
+              options: [
+                { label: "Prepend", value: "prepend" },
+                { label: "Append", value: "append" },
+              ],
+            },
           ],
         },
       ],
@@ -63,7 +89,12 @@ async function handleGet(req: Request): Promise<ActionGetResponse> {
 
 async function handlePost(req: Request): Promise<ActionPostResponse> {
   const requestUrl = new URL(req.url);
-  const { to: toPubkey, amount } = parseQueryParams(requestUrl);
+  const {
+    to: toPubkey,
+    amount,
+    blink,
+    insertion,
+  } = parseQueryParams(requestUrl);
 
   const body: ActionPostRequest = await req.json();
   const account = new PublicKey(body.account);
@@ -81,6 +112,20 @@ async function handlePost(req: Request): Promise<ActionPostResponse> {
     toPubkey: toPubkey,
     lamports: amount * LAMPORTS_PER_SOL,
   });
+
+  if (blink) {
+    return createPostResponse({
+      fields: {
+        transaction: await insertInstructionsInBlink(
+          blink,
+          insertion,
+          body.account,
+          [transferSolInstruction],
+        ),
+        message: `Send ${amount} SOL to ${toPubkey.toBase58()}`,
+      },
+    });
+  }
 
   const { blockhash, lastValidBlockHeight } =
     await connection.getLatestBlockhash();

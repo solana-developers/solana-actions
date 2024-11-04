@@ -62,6 +62,28 @@ const parseQueryParams = createQueryParser(GenericTransactionExtensionSchema);
 // http%3A%2F%2Flocalhost%3A3000%2Fapi%2Factions%2Ftransfer-sol%3Famount%3D0.01%26to%3D67ZiM1TRqPFR5s2Jz1z4d6noHHBRRzt1Te6xbWmPgYF7
 // localhost:3000/api/actions/transfer-sol?amount=0.01&to=67ZiM1TRqPFR5s2Jz1z4d6noHHBRRzt1Te6xbWmPgYF7
 
+// blink
+// wrap lighthouse
+// i as user want to wrap myself in a blink
+// wrap paymaster
+
+// send USDC to ilan.sol
+// [getOrCreateAta, transfer]
+
+// lighthouse 2 ixs
+// [pre, [...ix], postAssert]
+
+// user ? how do intelligent config my txs
+// human readable description & parameters
+
+// Distribution
+// Consumers | Developers
+// Developers - we now "vibrant" API ecosystem
+// anyone can write 3p API
+// "AI Agents are Wallets"
+// wallets agnostic of stack - go, ios / objective C, bahjj
+// Consumers -
+
 async function handlePost(req: Request): Promise<ActionPostResponse> {
   console.log("Request", req);
   const requestUrl = new URL(req.url);
