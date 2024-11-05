@@ -61,13 +61,13 @@ export async function createPostResponse(
     }
   }
 
-  if (args.fields.transaction instanceof Transaction) {
-    return prepareLegacyTransaction(
-      args as CreateActionPostResponseArgs<Transaction>,
-    );
-  } else {
+  if (isVersionedTransaction(args.fields.transaction)) {
     return prepareVersionedTransaction(
       args as CreateActionPostResponseArgs<VersionedTransaction>,
+    );
+  } else {
+    return prepareLegacyTransaction(
+      args as CreateActionPostResponseArgs<Transaction>,
     );
   }
 }
@@ -177,4 +177,10 @@ function injectReferencesToInstructions(
   });
 
   return instructions;
+}
+
+function isVersionedTransaction(
+  transaction: Transaction | VersionedTransaction,
+): transaction is VersionedTransaction {
+  return "version" in transaction;
 }
