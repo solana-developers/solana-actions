@@ -81,13 +81,13 @@ async function prepareVersionedTransaction({
   reference,
   actionIdentity,
 }: CreateActionPostResponseArgs<VersionedTransaction>): Promise<ActionPostResponse> {
-  let message = TransactionMessage.decompile(fields.transaction.message);
-
-  if (message.instructions.length <= 0) {
+  if (fields.transaction.message.compiledInstructions.length <= 0) {
     throw new CreatePostResponseError("at least 1 instruction is required");
   }
 
   if (actionIdentity) {
+    let message = TransactionMessage.decompile(fields.transaction.message);
+
     const { instruction, reference: finalReference } =
       createActionIdentifierInstruction(actionIdentity, reference);
 
@@ -97,13 +97,13 @@ async function prepareVersionedTransaction({
       actionIdentity.publicKey,
       finalReference,
     );
-  }
 
-  // recompile the message correctly based on the original version
-  if (fields.transaction.version == "legacy") {
-    fields.transaction.message = message.compileToLegacyMessage();
-  } else {
-    fields.transaction.message = message.compileToV0Message();
+    // recompile the message correctly based on the original version
+    if (fields.transaction.version == "legacy") {
+      fields.transaction.message = message.compileToLegacyMessage();
+    } else {
+      fields.transaction.message = message.compileToV0Message();
+    }
   }
 
   if (signers && signers.length) fields.transaction.sign(signers);
