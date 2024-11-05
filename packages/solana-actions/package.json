@@ -45,8 +45,9 @@
     "deploy": "npm run deploy:docs",
     "docs": "shx rm -rf docs && npx typedoc && shx cp .nojekyll docs/",
     "deploy:docs": "npm run docs && npx gh-pages --dist docs/ --dotfiles",
-    "version": "changeset version && git add -A && git commit -m \"chore: version\"",
-    "publish": "npm run build:release && changeset publish && git add -A && git push --follow-tags && npm run deploy:docs"
+    "changeset:version": "changeset version && git add -A && git commit -m \"chore: version\"",
+    "changeset:publish": "npm run build:release && changeset publish && git add -A",
+    "postpublish": "npm run deploy:docs && git add -A && git push --follow-tags"
   },
   "dependencies": {
     "@solana/actions-spec": "^2.4.1",
