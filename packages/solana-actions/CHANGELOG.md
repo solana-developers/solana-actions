@@ -1,5 +1,13 @@
 # @solana/actions
 
+## 1.6.6
+
+### Patch Changes
+
+- fix version transaction deserialization
+- bump spec version
+- fix flaky version transaction check
+
 ## 1.6.5
 
 ### Patch Changes
