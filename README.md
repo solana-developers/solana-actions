@@ -1,5 +1,13 @@
 # Solana Actions and Blockchain Links (Blinks)
 
+# Solana Actions SDK
+
+![npm](https://img.shields.io/npm/dw/@solana/actions)
+
+The **Solana Actions SDK** simplifies the process of integrating typed action definitions into your Solana-related projects. With this SDK, you can create, validate, and handle typed payloads for GET and POST requests, ensuring type safety and consistent payload structures.
+
+📚 **[Typedoc Documentation](https://solana-developers.github.io/solana-actions/)**  
+
 [Read the docs to get started](https://solana.com/docs/advanced/actions)
 
 Watch this video tutorial on
@@ -44,6 +52,101 @@ transaction preview in a wallet without going to a decentralized app; in
 Discord, a bot might expand the blink into an interactive set of buttons. This
 pushes the ability to interact on-chain to any web surface capable of displaying
 a URL.
+
+## Usage Examples
+
+Below are examples of some of the most common functions you can use with the Solana Actions SDK.
+
+### 1. Create Action Headers
+
+You can easily generate the headers required for your actions:
+
+```javascript
+import { createActionHeaders } from '@solana/actions';
+
+const headers = createActionHeaders();
+
+console.log(headers);
+/*
+{
+  "x-api-key": "your-api-key",
+  "x-user-token": "user-token",
+  "Content-Type": "application/json"
+}
+*/
+```
+
+### 2. Create a Typed actions.json Payload
+
+```javascript
+import { ActionGetResponse } from "@solana/actions";
+
+const payload: ActionGetResponse = {
+  type: "action",
+  title: "Transfer SOL Example",
+  icon: "https://youricon.url/sol.png",
+  description: "Send SOL to a specified wallet address",
+  label: "Transfer SOL",
+  links: {
+    actions: [
+      {
+        label: "Send 1 SOL",
+        href: "/api/transfer-sol?amount=1",
+      },
+      {
+        label: "Send Custom Amount",
+        href: "/api/transfer-sol?amount={amount}",
+        parameters: [
+          {
+            name: "amount",
+            label: "Enter the amount",
+            required: true,
+          },
+        ],
+      },
+    ],
+  },
+};
+
+```
+
+### Create a Typed GET Request Payload
+```javascript
+import { ActionGetResponse } from "@solana/actions";
+
+export const GET = async (req: Request) => {
+  const payload: ActionGetResponse = {
+    type: "action",
+    title: "On-chain Memo Example",
+    icon: "https://youricon.url/memo.png",
+    description: "Send a memo to the blockchain",
+    label: "Send Memo",
+  };
+
+  return new Response(JSON.stringify(payload), {
+    headers: { "Content-Type": "application/json" },
+  });
+};
+
+```
+### Create a Typed POST Response Payload
+```javascript
+import { ActionPostResponse, createPostResponse } from "@solana/actions";
+
+export const POST = async (req: Request) => {
+  const responsePayload: ActionPostResponse = createPostResponse({
+    status: "success",
+    result: {
+      message: "Transaction successful!",
+      transactionId: "5tRfgh...",
+    },
+  });
+
+  return new Response(JSON.stringify(responsePayload), {
+    headers: { "Content-Type": "application/json" },
+  });
+};
+```
 
 ## License
 
