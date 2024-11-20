@@ -1,0 +1,20 @@
+import { PublicKey } from '@solana/web3.js';
+import nacl from 'tweetnacl';
+import bs58 from 'bs58';
+
+/**
+ * Verifies the signed action payload.
+ *
+ * @param {Object} signedAction - The signed action payload with signature and publicKey.
+ * @returns {boolean} True if the signature is valid, false otherwise.
+ */
+export function verifySignedAction(signedAction) {
+    const { payload, signature, publicKey } = signedAction;
+    const message = new TextEncoder().encode(JSON.stringify(payload));
+
+    return nacl.sign.detached.verify(
+        message,
+        bs58.decode(signature),
+        new PublicKey(publicKey).toBytes()
+    );
+}
