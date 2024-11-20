@@ -1,0 +1,24 @@
+import { signActionPayload } from '../utils/signActionPayload';
+
+const actionPayload = {
+    actionType: 'transfer',
+    amount: 500,
+    destination: 'G7huw9ZxyV6HX...Xnb6Vhvqpk',
+};
+
+async function signActionExample() {
+    const wallet = window.solana;
+
+    if (!wallet.isConnected) {
+        await wallet.connect();
+    }
+
+    try {
+        const signedAction = await signActionPayload(actionPayload, wallet);
+        console.log('Signed Action:', signedAction);
+    } catch (error) {
+        console.error('Error signing action:', error.message);
+    }
+}
+
+signActionExample();
