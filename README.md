@@ -45,7 +45,58 @@ Discord, a bot might expand the blink into an interactive set of buttons. This
 pushes the ability to interact on-chain to any web surface capable of displaying
 a URL.
 
+## Example Code Snippets
+## Create Action Headers
+Generate the headers required for Solana Action requests.
+
+import { createActionHeaders } from '@solana/actions';
+
+const headers = createActionHeaders({
+  key: 'your-api-key',
+  secret: 'your-api-secret',
+});
+
+console.log(headers);
+
+## Create a Typed actions.json Payload
+Define and validate a payload for an action.
+
+import { ActionPayload } from '@solana/actions';
+
+const payload: ActionPayload = {
+  type: 'TRANSFER',
+  sender: 'sender-public-key',
+  receiver: 'receiver-public-key',
+  amount: 1000,
+};
+
+console.log(payload);
+
+## Create a Typed GET Request Payload
+Build a properly typed payload for GET requests.
+
+import { createGetRequest } from '@solana/actions';
+
+const getRequest = createGetRequest('/endpoint', { query: 'value' });
+
+console.log(getRequest);
+
+## Create a Typed POST Response Payload
+Generate a typed response for POST requests.
+
+import { createPostResponse } from '@solana/actions';
+
+const postResponse = createPostResponse({
+  success: true,
+  data: { id: '12345', status: 'completed' },
+});
+
+console.log(postResponse);
+
 ## License
 
 The Solana Actions JavaScript SDK is open source and available under the Apache
 License, Version 2.0. See the [LICENSE](./LICENSE) file for more info.
+
+
+
