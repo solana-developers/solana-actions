@@ -92,7 +92,7 @@ console.log(getRequestPayload);
 ### `Creating a Typed POST Response Payload Using createPostResponse`
 
 Use this function to create structured responses for POST requests with a
-standardized format.
+standardized format. Code snipets below!
 
 ```javascript
 import { createPostResponse } from '@solana/actions';
@@ -106,7 +106,7 @@ const postResponse = createPostResponse({
 });
 
 console.log(postResponse);
-``
+```
 
 ## What are Solana Actions?
 
